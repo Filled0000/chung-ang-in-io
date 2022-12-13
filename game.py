@@ -1,15 +1,18 @@
-# -*- coding: utf-8 -*- 
-'''2. 플레이어 (김주환)
+# -*- coding: ISO-8859-1 -*- 
+
+''' 2. 플레이어 (김주환)
 낙사 판정
 투명 바닥에 닿으면 초기 위치로 이동
 목숨 -1
 목숨 == 0, 게임오버
 투사체가 바닥에 닿았을 경우 삭제
-문제점 : 1. 플레이어 y좌표가 없다.  2. class 변수 스코어 조작
+문제점 : 1. 플레이어 y좌표가 없다.
 3. 아이템
--타이머 시간 추가 아이템  변수공유 필
+-타이머 시간 추가 아이템
 -데미지 증가 아이템
--목숨 추가 아이템'''
+-목숨 추가 아이템 
+-아이템 스프라이트 만들어야 함
+-아이템 랜덤 요소 추가 필요'''
 
 
 import pygame, sys, os
@@ -17,7 +20,6 @@ from datafile import *
 from pygame.locals import *
 import pygame.mixer
 
-life = 2
 # 게임 클래스
 class Game:
     def __init__(self):
@@ -25,7 +27,7 @@ class Game:
         pygame.mixer.init()
 
         #게임 컨트롤 변수
-        pygame.display.set_caption('RPG tutorial')                                      # 창 이름 설정
+        pygame.display.set_caption('중앙in 키우기')                                      # 창 이름 설정
         self.clock = pygame.time.Clock()
 
         self.screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
@@ -115,8 +117,18 @@ class Game:
 
         # 게임 실행
         self.run()
-
+        #level_time -> 레벨당 시간 
+        #level -> 스테이지 계수
     def run(self):
+        self.play = True
+        self.start_ticks=pygame.time.get_ticks()
+        self.level_time = 10
+        self.level = 0
+        self.get_time_item = 0
+        self.get_damage_item = 0
+        self.get_life_item = 0
+        global life
+
         # 메인 루프
         while True:
             self.screen_scaled.fill(BACKGROUND_COLOR)            # 화면 초기화
@@ -126,6 +138,21 @@ class Game:
 
             self.screen_scaled.blit(self.backImage, (0, 0))                                   # 배경 드로우
             self.screen_scaled.blit(self.mapImage, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 맵 드로우
+
+            self.screen_scaled.blit(self.mapImage_front, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 프론트 맵 드로우
+            
+            if self.get_time_item == 0:
+                self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 #calculate how many seconds
+            else:
+                self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 - 5 * self.get_time_item 
+
+
+            if self.game_timer > self.level_time and self.gameScore < 10: # if more than 10
+                pygame.quit()
+            else:
+                self.level += 1
+
+            draw_text(self.screen_scaled, "Time : " + str(round(self.game_timer, 1)), 8, (238, 238, 230), 20, 140)
 
             # 플레이어 컨트롤
             if self.player_attack_timer < self.player_attack_speed:
@@ -186,9 +213,7 @@ class Game:
                     if self.player_animationMode == True:
                         self.player_frame = 0
                     else:
-                        self.player_frame -= 1
-
-            
+                        self.player_frame -= 1           
 
 
             self.screen_scaled.blit(pygame.transform.flip(self.spr_player[self.player_action][self.player_frame], self.player_flip, False)
@@ -203,8 +228,7 @@ class Game:
                 pygame.display.update()'''
 
                 #초기위치로 이동 추가(초기화) 제작자가 플레이어y좌표 없애고 최적화 해놔서 Game()대신 플레이어 좌표만 옮기는 게 너무 까다로운 듯
-            if self.player_flytime >100:
-                global life
+            if self.player_flytime >100:               
                 life -= 1
                 if life == 0:
                     pygame.quit()
@@ -220,10 +244,11 @@ class Game:
                     obj.draw()
                     obj.physics_after()
 
-            self.screen_scaled.blit(self.mapImage_front, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 프론트 맵 드로우
-
+            
+            life += self.get_life_item
             draw_text(self.screen_scaled, "SCORE: " + str(self.gameScore), 8, (238, 238, 230), 200, 140)
             draw_text(self.screen_scaled, "LIFE: " + str(life), 8, (238, 238, 230), 220, 10)
+            self.get_life_item = 0
 
             # 이벤트 컨트롤
             for event in pygame.event.get():
