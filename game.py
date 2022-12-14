@@ -17,6 +17,8 @@ display_width = 960  # 화면 가로 크기
 display_height = 640  # 화면 세로 크기
 gameDisplay = pygame.display.set_mode((display_width, display_height))  # 화면 크기설정
 
+#실행시키면 그림파일들 선언한 것 없다고 나올텐데 그거 ui.py에서 복붙해서 쓰시면 이번엔 button 클래스가 인식이 안 됩니다.
+
 def main_menu():
     global pause
     pause=False
