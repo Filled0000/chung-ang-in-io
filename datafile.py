@@ -144,19 +144,26 @@ class EnemyObject(BaseObject):
             else:
                 self.game.gameScore += 10
             
-            '''for i in range(4):'''
-            #적 죽였을 때 아이템 생성#
-            item1 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'time_item', self.game)
-            item1.vspeed = random.randrange(-3, 0)
-            item1.direction = random.choice([True, False])
-
-            item2 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'damage_item', self.game)
-            item2.vspeed = random.randrange(-3, 0)
-            item2.direction = random.choice([True, False])
-
-            item3 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'life_item', self.game)
-            item3.vspeed = random.randrange(-3, 0)
-            item3.direction = random.choice([True, False])
+            #적 처치 시 아이템 생성
+            #확률 추가 (적 처치 시 1/3확률로 시간아이템 or 1/6확률로 데미지아이템 or 1/6확률로 목숨아이템 드랍, 1/3확률로 아이템 미생성) (확정은 아님)
+            item_number = random.randrange(1,4)
+            print(item_number)
+            if item_number == 1:
+                item1 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'time_item', self.game)
+                item1.vspeed = random.randrange(-3, 0)
+                item1.direction = random.choice([True, False])
+            
+            if item_number == 2:
+                if random.randrange(1,3) == 1:
+                    item2 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'damage_item', self.game)
+                    item2.vspeed = random.randrange(-3, 0)
+                    item2.direction = random.choice([True, False])
+            
+            if item_number == 3:
+                if random.randrange(1,3) == 1:
+                    item3 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'life_item', self.game)
+                    item3.vspeed = random.randrange(-3, 0)
+                    item3.direction = random.choice([True, False])
 
         if self.destroy == False:
             self.physics()
@@ -319,7 +326,7 @@ def createObject(spr, coord, types, game):
         obj.lifetime = 100
         obj.vspeed = -1
         obj.damage = 30 + game.get_damage_item * 30
-        #ㅁㄴㅇ
+        
     if types == 'time_item':
         obj = ItemObject(spr, coord, 'item', game, types)
         obj.frameSpeed = 20
