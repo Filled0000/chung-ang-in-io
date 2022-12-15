@@ -3,10 +3,166 @@
 # Referred to DaFluffyPotato's 'Physics - Pygame Tutorial: Making a Platformer'
 #-*-coding: utf-8
 
-import pygame, sys, os
+import pygame, sys, os, time
 from datafile import *
 from pygame.locals import *
 import pygame.mixer
+from ui import *
+
+pygame.font.init()
+
+display_width = 960  # 화면 가로 크기
+display_height = 640  # 화면 세로 크기
+gameDisplay = pygame.display.set_mode((display_width, display_height))  # 화면 크기설정
+pygame.display.set_caption("CAU KIUGI")  # 타이틀
+clock = pygame.time.Clock()
+
+# 폰트 설정
+#def get_font(size): # Returns Press-Start-2P in the desired size
+#    return pygame.font.Font("assets/font.ttf", size) 
+
+def text_objects(text, font, color):
+    textSurface = font.render(text, True, color)
+    return textSurface, textSurface.get_rect()
+
+def main_menu():
+    global pause
+    pause = False
+    menu = True
+
+    largeText = pygame.font.SysFont("font",115)
+    TextSurf, TextRect = text_objects("Title", largeText, "White")
+    TextRect.center = ((display_width/2),(display_height/2))
+    gameDisplay.blit(TextSurf, TextRect)
+
+  #  gameDisplay.fill("White")
+ #   largeText = pygame.font.Font('assets/font.ttf',115)
+#    TextSurf, TextRect = text_objects("CAU KIUGI", largeText)
+ #   TextRect.center = (480)
+
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        Button(Asset.mainmenu_start, 305, 290, 350, 60, Asset.mainmenu_start_click, 305, 290, game)
+        Button(Asset.mainmenu_htp, 280, 370, 400, 60, Asset.mainmenu_htp_click, 280, 370, htp)
+        Button(Asset.mainmenu_credit, 305, 450, 350, 60, Asset.mainmenu_credit_click, 305, 450, credit)
+        Button(Asset.mainmenu_quit, 305, 530, 350, 60, Asset.mainmenu_quit_click, 305, 530, finishgame)
+
+        pygame.display.update()
+        clock.tick(15)
+
+def game():
+    Game()
+    
+def htp():
+    htp = True
+
+    while htp:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        gameDisplay.blit(Asset.htp_background, (0, 0))
+        Button(Asset.htp_back, 305, 550, 350, 60, Asset.htp_back_click, 305, 550, main_menu)
+
+        pygame.display.update()
+        clock.tick(15)
+
+def credit():
+    credit = True
+    while credit:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        gameDisplay.blit(Asset.credit_background, (0, 0))
+        Button(Asset.credit_back, 305, 550, 350, 60, Asset.credit_back_click, 305, 550, main_menu)
+
+        pygame.display.update()
+        clock.tick(15)
+
+def finishgame():
+    pygame.quit()
+    sys.exit()
+
+def unpause():
+    global pause
+    pause = False
+
+def paused():
+    gameDisplay.fill("White")
+    largeText = pygame.font.SysFont("font",115)
+    TextSurf, TextRect = text_objects("Paused", largeText, "Black")
+    TextRect.center = ((display_width/2),(display_height/2))
+    gameDisplay.blit(TextSurf, TextRect)
+
+    while pause:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+        #gameDisplay.fill(white)
+        
+
+        Button(Asset.simple_button,50,450,370,109, Asset.simple_button,50,450, unpause)
+        Button(Asset.simple_button,450,450,354,109, Asset.simple_button,450,450, main_menu)
+
+        pygame.display.update()
+        clock.tick(15)
+        
+def gameOver():
+    global gOver
+    gOver = True
+    gameDisplay.fill("White")
+    largeText = pygame.font.SysFont("font",115)
+    TextSurf, TextRect = text_objects("Game Over", largeText, "Black")
+    TextRect.center = ((display_width/2),(display_height/2))
+    gameDisplay.blit(TextSurf, TextRect)
+
+    while gOver:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+        #gameDisplay.fill(white)
+        
+        Button(Asset.simple_button,50,450,370,109, Asset.simple_button,50,450, game)
+        Button(Asset.simple_button,450,450,354,109, Asset.simple_button,450,450, main_menu)
+
+        pygame.display.update()
+        clock.tick(15)
+        
+def stageClear():
+    global stgClear
+    stgClear = True
+    gameDisplay.fill("White")
+    largeText = pygame.font.SysFont("font",115)
+    TextSurf, TextRect = text_objects("Stage Clear", largeText, "Black")
+    TextRect.center = ((display_width/2),(display_height/2))
+    gameDisplay.blit(TextSurf, TextRect)
+
+    while stgClear:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+        #gameDisplay.fill(white)
+        
+        Button(Asset.simple_button,50,450,370,109, Asset.simple_button,50,450, nextStage)
+        Button(Asset.simple_button,450,450,354,109, Asset.simple_button,450,450, main_menu)
+
+        pygame.display.update()
+        clock.tick(15)
+        
+def nextStage():
+    Game2()
 
 # 게임 클래스
 class Game:
@@ -82,7 +238,7 @@ class Game:
             if floor_map[player_spon_x] != -1:
                 player_sponOK = False
 
-        self.player_rect = pygame.Rect((player_spon_x * 4, TILE_MAPSIZE[1] * 2 - 14), (6, 14))  # 플레이어 히트박스
+        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # 플레이어 히트박스
         self.player_movement = [0, 0]            # 플레이어 프레임당 속도
         self.player_vspeed = 0                   # 플레이어 y가속도
         self.player_flytime = 0                  # 공중에 뜬 시간
@@ -103,30 +259,55 @@ class Game:
         pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
         pygame.mixer.music.play(loops = -1)
 
+
         # 게임 실행
         self.run()
-
+        
+        #level_time -> 레벨당 시간 
+        #level -> 스테이지 계수
+        
     def run(self):
-        play = True
-        start_ticks=pygame.time.get_ticks()
-        level_time = 10
-        level = 0
+        self.play = True
+        self.start_ticks=pygame.time.get_ticks()
+        self.level_time = [10, 20, 30, 40, 50, 60]
+        self.level = 0
+        self.get_time_item = 0
+        self.get_damage_item = 0
+        self.get_life_item = 0
+        global life
+        global pause
+        
+        life = 300
+
         # 메인 루프
-        while play:
+        while True:
             self.screen_scaled.fill(BACKGROUND_COLOR)            # 화면 초기화
 
             self.camera_scroll[0] += int((self.player_rect.x - self.camera_scroll[0] - WINDOW_SIZE[0] / 8 - 5) / 16)       # 카메라 이동
             self.camera_scroll[1] += int((self.player_rect.y - self.camera_scroll[1] - WINDOW_SIZE[1] / 8 - 2) / 16)
 
             self.screen_scaled.blit(self.backImage, (0, 0))                                   # 배경 드로우
-            self.screen_scaled.blit(self.mapImage, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 맵 드로우z
+            self.screen_scaled.blit(self.mapImage, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 맵 드로우
             
-            game_timer = (pygame.time.get_ticks() - start_ticks) / 1000 #calculate how many seconds
-            if game_timer > level_time and self.gameScore < 10: # if more than 10
-                pygame.quit()
+            self.screen_scaled.blit(self.mapImage_front, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 프론트 맵 드로우
+            
+            if self.get_time_item == 0:
+                self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 #calculate how many seconds
             else:
-                level += 1
-            draw_text(self.screen_scaled, "Time : " + str(round(game_timer, 1)), 8, (238, 238, 230), 20, 140)
+                self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 - 5 * self.get_time_item 
+
+
+            if self.game_timer > self.level_time[self.level] and self.gameScore < 10: # if more than 100
+                gameOver()
+            else:
+                if self.game_timer > self.level_time[self.level] and self.gameScore >= 10:
+                    self.level += 1
+                    stageClear()
+                
+
+            draw_text(self.screen_scaled, "Time : " + str(round(self.level_time[self.level] - self.game_timer, 1)), 8, (238, 238, 230), 30, 140)
+            
+            draw_text(self.screen_scaled, "Level : " + str(round(self.level, 1)), 8, (238, 238, 230), 30, 10)
 
             # 플레이어 컨트롤
             if self.player_attack_timer < self.player_attack_speed:
@@ -190,6 +371,14 @@ class Game:
 
             self.screen_scaled.blit(pygame.transform.flip(self.spr_player[self.player_action][self.player_frame], self.player_flip, False)
                                , (self.player_rect.x - self.camera_scroll[0] - 5, self.player_rect.y - self.camera_scroll[1] - 2))      # 플레이어 드로우
+            
+            if self.player_flytime >50:               
+                life -= 1
+                if life == 0:
+                    gameOver()
+                else:
+                    self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
+                    self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2
 
             for obj in objects:         # 오브젝트 이벤트 처리
                 if obj.destroy:
@@ -199,10 +388,11 @@ class Game:
                     obj.draw()
                     obj.physics_after()
 
-            self.screen_scaled.blit(self.mapImage_front, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 프론트 맵 드로우
-
+            life += self.get_life_item
             draw_text(self.screen_scaled, "SCORE: " + str(self.gameScore), 8, (238, 238, 230), 200, 140)
-
+            draw_text(self.screen_scaled, "LIFE: " + str(life), 8, (238, 238, 230), 200, 10)
+            self.get_life_item = 0
+            
             # 이벤트 컨트롤
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -219,6 +409,12 @@ class Game:
                  
                         self.player_frame, self.player_action, self.player_frameSpeed, self.player_animationMode = change_playerAction(
                             self.player_frame, self.player_action, 'jump', self.player_frameSpeed, 6, self.player_animationMode, False)
+                    
+                    # pause
+                    if event.key == pygame.K_p:
+                        pause = True
+                        paused()
+
                     if event.key == K_SPACE and self.player_attack_timer >= self.player_attack_speed:        # 공격
                         self.player_attack_timer = 0
                         self.player_shot = createObject(self.spr_effect['player_shot'], (self.player_rect.x, self.player_rect.y + 2), 'player_shot', self)
@@ -230,10 +426,110 @@ class Game:
                     if event.key == K_RIGHT:
                         self.keyRight = False
 
+                
+
             surf = pygame.transform.scale(self.screen_scaled, WINDOW_SIZE)       # 창 배율 적용
             self.screen.blit(surf, (0, 0))
 
             pygame.display.update()
             self.clock.tick(60)
 
-game = Game()   # 게임 실행
+#game = Game()   # 게임 실행
+
+class Game2:
+    def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
+
+        #게임 컨트롤 변수
+        pygame.display.set_caption('RPG tutorial')                                      # 창 이름 설정
+        self.clock = pygame.time.Clock()
+
+        self.screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
+        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # 확대한 스크린
+
+        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # 카메라 이동 좌표
+
+        self.gameScore = 0       # 점수
+
+        # 리소스 불러오기
+        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 16, 16, 8, 8, 12)      # 플레이어 스프라이트 시트
+        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # 공통 오브젝트 스프라이트 시트
+        self.spriteSheet_map1 = SpriteSheet('spriteSheet4.png', 8, 8, 16, 16, 87)         # 지형 1 스프라이트 시트
+
+        self.spr_player = {}     # 플레이어 스프라이트 세트
+        self.spr_player['stay'] = createSpriteSet(self.spriteSheet_player, [0])
+        self.spr_player['run'] = createSpriteSet(self.spriteSheet_player, 1, 8)
+        self.spr_player['jump'] = createSpriteSet(self.spriteSheet_player, [9, 10, 11])
+
+        self.spr_effect = {}     # 효과 스프라이트 세트
+        self.spr_effect['player_shot'] = createSpriteSet(self.spriteSheet_object, 37, 40)          
+        self.spr_effect['player_shotBoom'] = createSpriteSet(self.spriteSheet_object, 41, 44)
+
+        self.spr_enemy = {}      # 적 스프라이트 세트
+        self.spr_enemy['slime'] = createSpriteSet(self.spriteSheet_map1, 81, 83)          
+        self.spr_enemy['snake'] = createSpriteSet(self.spriteSheet_map1, 84, 86)
+
+        self.spr_map_struct = {}     # 구조물 스프라이트 세트
+        self.spr_map_struct['leaf'] = [55, 56]
+        self.spr_map_struct['flower'] = [57, 64]
+        self.spr_map_struct['obj'] = [65, 70]
+        self.spr_map_struct['sign'] = [71, 74]
+        self.spr_map_struct['gravestone'] = [75, 78]
+        self.spr_map_struct['skull'] = [79, 80]
+
+        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # 코인 스프라이트 세트
+
+        createMapData()                                 # 맵 데이터 초기화
+        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # 맵 이미지 생성
+        self.backImage = createBackImage(self.spriteSheet_object)         # 배경 이미지 생성
+
+        #효과음
+        self.sound_attack = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'attack.wav'))
+        self.sound_coin = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'coin.wav'))
+        self.sound_footstep0 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep0.wav'))
+        self.sound_footstep1 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep1.wav'))
+        self.sound_monster = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'monster.wav'))
+
+        # 적 생성
+        for i in range(8):
+            obj_snake = createObject(self.spr_enemy['snake'], (random.randrange(0, 960), 100), 'snake', self)
+            obj_snake = createObject(self.spr_enemy['slime'], (random.randrange(0, 960), 100), 'slime', self)
+
+        # 플레이어 컨트롤 변수
+        self.keyLeft = False
+        self.keyRight = False
+
+        player_sponOK = True
+        player_spon_x = TILE_MAPSIZE[0] // 2 - 1
+
+        while(player_sponOK):
+            player_spon_x += 1
+
+            if floor_map[player_spon_x] != -1:
+                player_sponOK = False
+
+        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # 플레이어 히트박스
+        self.player_movement = [0, 0]            # 플레이어 프레임당 속도
+        self.player_vspeed = 0                   # 플레이어 y가속도
+        self.player_flytime = 0                  # 공중에 뜬 시간
+
+        self.player_action = 'stay'              # 플레이어 현재 행동
+        self.player_frame = 0                    # 플레이어 애니메이션 프레임
+        self.player_frameSpeed = 1               # 플레이어 애니메이션 속도(낮을 수록 빠름. max 1)
+        self.player_frameTimer = 0
+        self.player_flip = False                 # 플레이어 이미지 반전 여부 (False: RIGHT)
+        self.player_animationMode = True         # 애니메이션 모드 (False: 반복, True: 한번)
+        self.player_walkSoundToggle = False
+        self.player_walkSoundTimer = 0
+
+        self.player_attack_timer = 0             # 플레이어 공격 타이머
+        self.player_attack_speed = 15            # 플레이어 공격 속도
+
+        # 배경음 실행
+        pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
+        pygame.mixer.music.play(loops = -1)
+        
+        Game.run(self)
+
+main_menu()
