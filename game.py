@@ -162,11 +162,20 @@ def stageClear():
         clock.tick(15)
         
 def nextStage():
-    Game2()
+    if Variables.StageLevel == 1:
+        Game2()
+    elif Variables.StageLevel == 2:
+        Game3()
+    elif Variables.StageLevel == 3:
+        Game4()
+    elif Variables.StageLevel == 4:
+        BossStage()
 
 class Variables:
-    StageLevel = 1
+    StageLevel = 0
     LifeCount = 300
+    levelTime = [10, 20, 30, 40, 50]
+    levelScore = [10, 30, 50, 70, 90]
 
 # 게임 클래스
 class Game:
@@ -273,7 +282,6 @@ class Game:
     def run(self):
         self.play = True
         self.start_ticks=pygame.time.get_ticks()
-        self.level_time = [10, 20, 30, 40, 50, 60]
         self.get_time_item = 0
         self.get_damage_item = 0
         self.get_life_item = 0
@@ -298,17 +306,17 @@ class Game:
                 self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 - 5 * self.get_time_item 
 
 
-            if self.game_timer > self.level_time[var.StageLevel] and self.gameScore < 10: # if more than 100
+            if self.game_timer > var.levelTime[var.StageLevel] and self.gameScore < var.levelScore[var.StageLevel]: # if more than 100
                 gameOver()
             else:
-                if self.game_timer > self.level_time[var.StageLevel] and self.gameScore >= 10:
+                if self.game_timer > var.levelTime[var.StageLevel] and self.gameScore >= var.levelScore[var.StageLevel]:
                     var.StageLevel += 1
                     stageClear()
                 
 
-            draw_text(self.screen_scaled, "Time : " + str(round(self.level_time[var.StageLevel] - self.game_timer, 1)), 8, (238, 238, 230), 30, 140)
-            
-            draw_text(self.screen_scaled, "Level : " + str(round(var.StageLevel, 1)), 8, (238, 238, 230), 30, 10)
+            draw_text(self.screen_scaled, "Time : " + str(round(var.levelTime[var.StageLevel] - self.game_timer, 1)), 8, (238, 238, 230), 30, 140)
+            draw_text(self.screen_scaled, "Level : " + str(round(var.StageLevel + 1, 1)), 8, (238, 238, 230), 30, 10)
+            draw_text(self.screen_scaled, "Target Score : " + str(round(var.levelScore[var.StageLevel], 1)), 8, (238, 238, 230), 120, 140)
 
             # 플레이어 컨트롤
             if self.player_attack_timer < self.player_attack_speed:
