@@ -164,6 +164,10 @@ def stageClear():
 def nextStage():
     Game2()
 
+class Variables:
+    StageLevel = 1
+    LifeCount = 300
+
 # 게임 클래스
 class Game:
     def __init__(self):
@@ -270,14 +274,11 @@ class Game:
         self.play = True
         self.start_ticks=pygame.time.get_ticks()
         self.level_time = [10, 20, 30, 40, 50, 60]
-        self.level = 0
         self.get_time_item = 0
         self.get_damage_item = 0
         self.get_life_item = 0
-        global life
         global pause
-        
-        life = 300
+        var = Variables
 
         # 메인 루프
         while True:
@@ -297,17 +298,17 @@ class Game:
                 self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 - 5 * self.get_time_item 
 
 
-            if self.game_timer > self.level_time[self.level] and self.gameScore < 10: # if more than 100
+            if self.game_timer > self.level_time[var.StageLevel] and self.gameScore < 10: # if more than 100
                 gameOver()
             else:
-                if self.game_timer > self.level_time[self.level] and self.gameScore >= 10:
-                    self.level += 1
+                if self.game_timer > self.level_time[var.StageLevel] and self.gameScore >= 10:
+                    var.StageLevel += 1
                     stageClear()
                 
 
-            draw_text(self.screen_scaled, "Time : " + str(round(self.level_time[self.level] - self.game_timer, 1)), 8, (238, 238, 230), 30, 140)
+            draw_text(self.screen_scaled, "Time : " + str(round(self.level_time[var.StageLevel] - self.game_timer, 1)), 8, (238, 238, 230), 30, 140)
             
-            draw_text(self.screen_scaled, "Level : " + str(round(self.level, 1)), 8, (238, 238, 230), 30, 10)
+            draw_text(self.screen_scaled, "Level : " + str(round(var.StageLevel, 1)), 8, (238, 238, 230), 30, 10)
 
             # 플레이어 컨트롤
             if self.player_attack_timer < self.player_attack_speed:
@@ -372,13 +373,15 @@ class Game:
             self.screen_scaled.blit(pygame.transform.flip(self.spr_player[self.player_action][self.player_frame], self.player_flip, False)
                                , (self.player_rect.x - self.camera_scroll[0] - 5, self.player_rect.y - self.camera_scroll[1] - 2))      # 플레이어 드로우
             
-            if self.player_flytime >50:               
-                life -= 1
-                if life == 0:
+            if self.player_flytime > 100:               
+                if var.LifeCount == 0:
                     gameOver()
                 else:
+                    self.player_vspeed = 0
+                    self.player_flytime = 0
                     self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
                     self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2
+                    var.LifeCount -= 1
 
             for obj in objects:         # 오브젝트 이벤트 처리
                 if obj.destroy:
@@ -388,9 +391,9 @@ class Game:
                     obj.draw()
                     obj.physics_after()
 
-            life += self.get_life_item
+            var.LifeCount += self.get_life_item
             draw_text(self.screen_scaled, "SCORE: " + str(self.gameScore), 8, (238, 238, 230), 200, 140)
-            draw_text(self.screen_scaled, "LIFE: " + str(life), 8, (238, 238, 230), 200, 10)
+            draw_text(self.screen_scaled, "LIFE: " + str(var.LifeCount), 8, (238, 238, 230), 200, 10)
             self.get_life_item = 0
             
             # 이벤트 컨트롤
