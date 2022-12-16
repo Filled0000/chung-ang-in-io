@@ -39,7 +39,6 @@ class Asset:
     pause_button=pygame.image.load("buttons/03.png")
     pause_button_click=pygame.image.load("buttons/03.png")
 
-
 class Button:  # 버튼
     def __init__(self, img_in,x, y, width, height, img_act, x_act, y_act, action=None):
         #self, 이미지, x,y,넓이,높이, 반응했을 때 이미지, 반응했을 때 x, 반응했을 때 y, 함수호출

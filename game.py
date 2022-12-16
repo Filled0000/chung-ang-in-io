@@ -7,6 +7,7 @@ import pygame, sys, os, time
 from datafile import *
 from pygame.locals import *
 import pygame.mixer
+from pygame import display, movie
 from ui import *
 
 pygame.font.init()
@@ -47,13 +48,11 @@ def main_menu():
 
         gameDisplay.blit(Asset.mainmenu_background, (0, 0))
         gameDisplay.blit(TextSurf, TextRect)
-        
-
 
         Button(Asset.mainmenu_start, 305, 290, 348, 63, Asset.mainmenu_start_click, 310, 280, game)
         Button(Asset.mainmenu_htp, 305, 370, 348, 63, Asset.mainmenu_htp_click, 310, 360, htp)
-        Button(Asset.mainmenu_credit, 305, 450, 348, 63, Asset.mainmenu_credit_click, 305, 440, credit)
-        Button(Asset.mainmenu_quit, 305, 530, 348, 63, Asset.mainmenu_quit_click, 305, 520, finishgame)
+        Button(Asset.mainmenu_credit, 305, 450, 348, 63, Asset.mainmenu_credit_click, 310, 440, credit)
+        Button(Asset.mainmenu_quit, 305, 530, 348, 63, Asset.mainmenu_quit_click, 310, 520, finishgame)
 
         pygame.display.update()
         clock.tick(15)
@@ -72,7 +71,7 @@ def htp():
                 pygame.quit()
                 sys.exit()
         gameDisplay.blit(Asset.htp_background, (0, 0))
-        Button(Asset.htp_back, 305, 550, 350, 60, Asset.htp_back_click, 305, 550, main_menu)
+        Button(Asset.htp_back, 305, 550, 350, 60, Asset.htp_back_click, 310, 545, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -85,7 +84,7 @@ def credit():
                 pygame.quit()
                 sys.exit()
         gameDisplay.blit(Asset.credit_background, (0, 0))
-        Button(Asset.credit_back, 305, 550, 350, 60, Asset.credit_back_click, 305, 550, main_menu)
+        Button(Asset.credit_back, 305, 550, 350, 60, Asset.credit_back_click, 310, 545, main_menu)
 
         pygame.display.update()
         clock.tick(15)
