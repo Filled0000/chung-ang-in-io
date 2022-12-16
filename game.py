@@ -59,6 +59,8 @@ def main_menu():
         clock.tick(15)
 
 def game():
+    Variables.StageLevel = 0
+    Variables.LifeCount = 3
     Game()
     
 def htp():
@@ -166,7 +168,7 @@ def stageClear():
         
 def nextStage():
     if Variables.StageLevel == 1:
-        Game2()
+        BossStage()
     elif Variables.StageLevel == 2:
         Game3()
     elif Variables.StageLevel == 3:
@@ -453,11 +455,11 @@ class Game:
 
 #game = Game()   # 게임 실행
 
-class Game2:
+class BossStage:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
-
+        
         #게임 컨트롤 변수
         pygame.display.set_caption('RPG tutorial')                                      # 창 이름 설정
         self.clock = pygame.time.Clock()
@@ -497,7 +499,7 @@ class Game2:
 
         self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # 코인 스프라이트 세트
 
-        createMapData()                                 # 맵 데이터 초기화
+        createBossMapData()                            # 맵 데이터 초기화
         self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # 맵 이미지 생성
         self.backImage = createBackImage(self.spriteSheet_object)         # 배경 이미지 생성
 

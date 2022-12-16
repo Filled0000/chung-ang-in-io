@@ -401,6 +401,9 @@ def createMapData():
     ground_heightChange = 0
     ground_mode_stack = 1       # 큰 크기 스택 (큰 크기 1~4개 생성 후 작은 크기 1개 생성)
     ground_mode_stackMax = random.randrange(2, 6)
+    
+    for i in range(TILE_MAPSIZE[0] - 1):    #바닥 데이터 초기화
+        floor_map[i] = -1
 
     for i in range(TILE_MAPSIZE[0] - 1):
         if ground_interval > 0:         # 바닥 간격 띄우기
@@ -571,3 +574,42 @@ def change_playerAction(frame, action_var, new_var, frameSpd, new_frameSpd, aniM
         aniMode = new_aniMode
 
     return frame, action_var, frameSpd, aniMode
+
+def createBossMapData():
+    for i in range(TILE_MAPSIZE[0] - 1):    #바닥 데이터 초기화
+        floor_map[i] = -1
+    
+    #맵 양쪽 끝
+    
+    floor_map[0] = 4
+    floor_map[1] = 5
+    
+    floor_map[126] = 5
+    floor_map[127] = 4
+    
+    for i in range(15, 43):
+        floor_map[i] = 10
+    
+    for i in range(44, 49):
+        floor_map[i] = 11
+    
+    for i in range(50, 54):
+        floor_map[i] = 10
+    
+    for i in range(55, 59):
+        floor_map[i] = 9
+    
+    for i in range(60, 67):
+        floor_map[i] = 10
+        
+    for i in range(67, 71):
+        floor_map[i] = 9
+        
+    for i in range(72, 76):
+        floor_map[i] = 10
+    
+    for i in range(77, 81):
+        floor_map[i] = 11
+        
+    for i in range(77, 111):
+        floor_map[i] = 10
