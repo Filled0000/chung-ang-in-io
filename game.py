@@ -269,7 +269,8 @@ class Game:
         pygame.mixer.music.play(loops = -1)
 
         
-
+        
+        
         # 게임 실행
         self.run()
         
@@ -293,9 +294,7 @@ class Game:
         while True:
             self.screen_scaled.fill(BACKGROUND_COLOR)            # 화면 초기화
 
-            # 일시정지 버튼 생성
-            Button(Asset.pause_button, 900, 20, 54, 63, Asset.pause_button_click, 900, 20, paused)
-
+           
             self.camera_scroll[0] += int((self.player_rect.x - self.camera_scroll[0] - WINDOW_SIZE[0] / 8 - 5) / 16)       # 카메라 이동
             self.camera_scroll[1] += int((self.player_rect.y - self.camera_scroll[1] - WINDOW_SIZE[1] / 8 - 2) / 16)
 
@@ -304,6 +303,10 @@ class Game:
             
             self.screen_scaled.blit(self.mapImage_front, (-self.camera_scroll[0], -self.camera_scroll[1]))    # 프론트 맵 드로우
             
+             # 일시정지 버튼 생성
+            Button(Asset.pause_button, 890, 15, 54, 63, Asset.pause_button_click, 890, 15, paused)
+            pygame.display.update()
+
             if self.get_time_item == 0:
                 self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 #calculate how many seconds
             else:
@@ -444,7 +447,7 @@ class Game:
             surf = pygame.transform.scale(self.screen_scaled, WINDOW_SIZE)       # 창 배율 적용
             self.screen.blit(surf, (0, 0))
 
-            pygame.display.update()
+            #pygame.display.update()
             self.clock.tick(60)
         
 
