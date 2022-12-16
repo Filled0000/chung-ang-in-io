@@ -1,4 +1,4 @@
-#-*-coding: utf-8
+# -*- coding: ISO-8859-1 -*- 
 
 import pygame, os, random
 
@@ -19,6 +19,8 @@ floor_map = [-1] * TILE_MAPSIZE[0]     # 바닥 타일 맵(-1: 없음, 이외: y좌표)
 
 objects = []                # 오브젝트 리스트
 enemys = []                 # 적 오브젝트 리스트
+
+life = 2
 
 # 스프라이트 시트 클래스 
 class SpriteSheet:           
@@ -137,11 +139,31 @@ class EnemyObject(BaseObject):
         if self.hp < 1:
             self.destroy = True
             self.game.sound_monster.play()
-
-            for i in range(4):
-                coin = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'coin', self.game)
-                coin.vspeed = random.randrange(-3, 0)
-                coin.direction = random.choice([True, False])
+            if self.types == 'snake':
+                self.game.gameScore += 5
+            else:
+                self.game.gameScore += 10
+            
+            #적 처치 시 아이템 생성
+            #확률 추가 (적 처치 시 1/3확률로 시간아이템 or 1/6확률로 데미지아이템 or 1/6확률로 목숨아이템 드랍, 1/3확률로 아이템 미생성) (확정은 아님)
+            item_number = random.randrange(1,4)
+            print(item_number)
+            if item_number == 1:
+                item1 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'time_item', self.game)
+                item1.vspeed = random.randrange(-3, 0)
+                item1.direction = random.choice([True, False])
+            
+            if item_number == 2:
+                if random.randrange(1,3) == 1:
+                    item2 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'damage_item', self.game)
+                    item2.vspeed = random.randrange(-3, 0)
+                    item2.direction = random.choice([True, False])
+            
+            if item_number == 3:
+                if random.randrange(1,3) == 1:
+                    item3 = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'life_item', self.game)
+                    item3.vspeed = random.randrange(-3, 0)
+                    item3.direction = random.choice([True, False])
 
         if self.destroy == False:
             self.physics()
@@ -159,6 +181,7 @@ class EnemyObject(BaseObject):
                         self.movement[0] -= 1
                     else:
                         self.direction = False
+
             elif self.types == 'slime':       # 슬라임일 경우
                 self.actTimer += 1
                 self.frameTimer += 1
@@ -221,6 +244,10 @@ class EffectObject(BaseObject):
                 else:
                     self.direction = True
                     self.movement[0] -= 4
+            
+            #투사체가 바닥에 닿았을 경우 삭제 추가 완료#
+            if self.collision['top'] or self.collision['bottom'] or self.collision['right'] or self.collision['left']:
+                self.destroy = True
 
             for enemy in enemys:            # 적과 충돌 계산
                 if self.destroy == False and enemy.destroy == False and self.rect.colliderect(enemy.rect):
@@ -250,10 +277,33 @@ class ItemObject(BaseObject):
                 self.direction = True
                 self.movement[0] -= 2
 
-        if self.destroy == False and self.rect.colliderect(self.game.player_rect):
+        #타이머 시간 추가 아이템(타이머 -5초)
+        if self.types == 'time_item':
+            if self.destroy == False and self.rect.colliderect(self.game.player_rect):
+                self.destroy = True
+                self.game.get_time_item += 1
+                self.game.sound_coin.play()
+        
+        #데미지 증가 아이템(데미지 +30)
+        if self.types == 'damage_item':
+            if self.destroy == False and self.rect.colliderect(self.game.player_rect):
+                self.destroy = True
+                self.game.get_damage_item += 1
+                self.game.sound_coin.play()
+
+        #목숨 추가 아이템(미완성)
+        if self.types == 'life_item':
+            if self.destroy == False and self.rect.colliderect(self.game.player_rect):
+                self.destroy = True
+                #목숨 하나 늘리기
+                self.game.get_life_item += 1
+                self.game.sound_coin.play()
+
+        #원래 코인 아이템
+        '''if self.destroy == False and self.rect.colliderect(self.game.player_rect):
             self.destroy = True
             self.game.gameScore += 5
-            self.game.sound_coin.play()
+            self.game.sound_coin.play()'''
 
 
 # 오브젝트 생성 함수
@@ -275,10 +325,21 @@ def createObject(spr, coord, types, game):
         obj.frameSpeed = 10
         obj.lifetime = 100
         obj.vspeed = -1
-        obj.damage = 30
-    if types == 'coin':
+        obj.damage = 30 + game.get_damage_item * 30
+        
+    if types == 'time_item':
+        obj = ItemObject(spr, coord, 'item', game, types)
+        obj.frameSpeed = 20
+    if types == 'damage_item':
         obj = ItemObject(spr, coord, 'item', game, types)
         obj.frameSpeed = 25
+    if types == 'life_item':
+        obj = ItemObject(spr, coord, 'item', game, types)
+        obj.frameSpeed = 30
+    '''if types == 'coin':
+        obj = ItemObject(spr, coord, 'item', game, types)
+        obj.frameSpeed = 25'''
+    
 
     objects.append(obj)
 
