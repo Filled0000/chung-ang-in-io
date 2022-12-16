@@ -1,7 +1,7 @@
 #-*-coding: utf-8
 
 from tkinter import END
-import pygame, os, random, threading
+import pygame, os, random
 
 DIR_PATH = os.path.dirname(__file__)    # 파일 위치
 DIR_IMAGE = os.path.join(DIR_PATH, 'image')
@@ -20,6 +20,7 @@ floor_map = [-1] * TILE_MAPSIZE[0]     # 바닥 타일 맵(-1: 없음, 이외: y
 
 objects = []                # 오브젝트 리스트
 enemys = []                 # 적 오브젝트 리스트
+boss_list = []
 
 # 스프라이트 시트 클래스 
 class SpriteSheet:           
@@ -56,6 +57,8 @@ def draw_text(screen, text, size, color, x, y):
     text_rect = text_surface.get_rect()
     text_rect.midtop = (round(x), round(y))
     screen.blit(text_surface, text_rect)
+
+
 
 # 기본 오브젝트 클래스
 class BaseObject:
@@ -107,6 +110,12 @@ class BaseObject:
             pygame.draw.rect(self.game.screen_scaled, (189, 76, 49)
             , [self.rect.x - 1 - self.game.camera_scroll[0], self.rect.y - 5 - self.game.camera_scroll[1], 10 * self.hp / self.hpm, 2])
 
+        elif self.kinds == 'boss' and self.hp < self.hpm:
+            pygame.draw.rect(self.game.screen_scaled, (131, 133, 131)
+            , [self.rect.x - 1 - self.game.camera_scroll[0], self.rect.y - 5 - self.game.camera_scroll[1], 10, 2])
+            pygame.draw.rect(self.game.screen_scaled, (189, 76, 49)
+            , [self.rect.x - 1 - self.game.camera_scroll[0], self.rect.y - 5 - self.game.camera_scroll[1], 10 * self.hp / self.hpm, 2])
+
     def animation(self, mode):
         if mode == 'loop':
             self.frameTimer += 1
@@ -122,25 +131,13 @@ class BaseObject:
         if self.kinds == 'enemy':
             enemys.remove(self)
 
+        if self.kinds == 'boss':
+            boss_list.remove(self)
+
         objects.remove(self)
         del(self)
 
-    # 넉백 함수
-    def deploy_knockback(self):
-        if self.knockback is False:
-            self.knockback = True
-            self.X_change = self.knockback_speed
-            self.knockback_counter = self.knockback_time*self.fps
-        
-    def continue_knockback(self):
-        if self.knockback is True:
-            self.knockback_counter -= 1
-                
-            if self.knockback_counter <= 0:
-                self.knockback = False
-                self.X_change = 0
-            else:
-                self.X_change = self.knockback_speed
+    
 
 # 적 오브젝트 클래스
 class EnemyObject(BaseObject):
@@ -220,13 +217,27 @@ class BossObject(BaseObject):
         self.actTimer = 0
         self.hpm = 0
         self.hp = 0
+        self.randrange = random.randrange
+
+        self.Boss_action = 'Boss'
+        self.Boss_frame = 0                    # 플레이어 보스 프레임
+        self.Boss_frameSpeed = 1               # 플레이어 보스 속도(낮을 수록 빠름. max 1)
+        self.Boss_frameTimer = 0
+        self.Boss_flip = False                 # 보스 이미지 반전 여부 (False: RIGHT)
+        self.Boss_animationMode = True         # 애니메이션 모드 (False: 반복, True: 한번)
+        
+        self.player_frame = 0                    # 플레이어 애니메이션 프레임
+        self.player_frameSpeed = 1               # 플레이어 애니메이션 속도(낮을 수록 빠름. max 1)
+        self.player_frameTimer = 0
+        self.player_flip = False                 # 플레이어 이미지 반전 여부 (False: RIGHT)
+        self.player_animationMode = True         # 애니메이션 모드 (False: 반복, True: 한번)
 
     def events(self):
         if self.hp < 1:
             self.destroy = True
             self.game.sound_monster.play()
 
-            # 보스 죽인후 보상 설정가능
+            # 보스 죽인후 코인이 드랍 - 위와 같음
             for i in range(4):            
                 coin = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'coin', self.game)
                 coin.vspeed = random.randrange(-3, 0)
@@ -235,7 +246,7 @@ class BossObject(BaseObject):
         if self.destroy == False:
             self.physics()
 
-            if self.types == 'Boss':       # 보스 일반행동패턴
+            if self.types == 'Boss':       # 보스 일반적인 움직임
                 self.animation('loop')
 
                 if self.direction == False:
@@ -248,37 +259,23 @@ class BossObject(BaseObject):
                         self.movement[0] -= 1
                     else:
                         self.direction = False
+
+            for boss in boss_list:
+
+                if self.destroy == False and boss.destroy == False:
+                    if pygame.sprite.collide_rect(self.player_rect.right, self.Boss_rect.left):
+                        self.player_movement[0] -= 2
+                        self.player_vspeed += 2
+                        self.player_flip = True
+                        self.player_frame, self.player_action, self.player_frameSpeed, self.player_animationMode = change_playerAction(
+                            self.player_frame, self.player_action, 'stay', self.player_frameSpeed, 3, self.player_animationMode, True)
+
+
+            # 미구현
+            if self.hp <= 2500:
                 
-            if self.hp <= 1500:            # 체력 1500 이하 -> 이동속도 증가 / 가속도 증가
-                self.actSpeed + 30
-                self.vspeed + 2
-     
-    #돌진 공격
-    def Boss_Dash(self):
-        self.sprite.index = 0
-        self.sprite.Boss_rect = self.Boss_rect
-        self.Boss_Dash = False
-
-        if self.hp <= 2000:
-            
-            if self.dash_current_use > 0:                    # 왼쪽을 보고 있을때 대시
-                if self.facing_left:
-                    self.vx = -1.5 * self.speed
-                    self.ax = (self.speed * 0.5)
-                    self.status = -3
-                    self.dash_current_use -= 1
-
-                if self.facing_right:                        # 오른쪽을 보고 있을때 대시
-                    self.vx = 1.5 * self.speed
-                    self.ax = (self.speed * 0.5)
-                    self.status = -3
-                    self.dash_current_use -= 1
-
-                self.Boss_Dash = True
-
-        threading.Timer(random.randrange(0,15)).start()       # 0에서 15초 사이로 랜덤하게 돌진 실행
-    
-    Boss_Dash()
+                self.Boss_frame, self.Boss_action, self.Boss_frameSpeed, self.Boss_animationMode = change_BossAction(
+                         self.Boss_frame, self.Boss_action, 'Boss_Dash', self.Boss_frameSpeed, 3, self.Boss_animationMode, True)
 
 
 # 투사체 오브젝트 클래스
@@ -318,6 +315,11 @@ class EffectObject(BaseObject):
                     self.destroy = True
                     enemy.hp -= self.damage
 
+            for boss in boss_list:
+                if self.destroy == False and boss.destroy == False and self.rect.colliderect(boss.rect):
+                    self.destroy = True
+                    boss.hp -= self.damage
+        
 # 아이템 오브젝트 클래스
 class ItemObject(BaseObject):
     def __init__(self, spr, coord, kinds, game, types):
@@ -359,15 +361,16 @@ def createObject(spr, coord, types, game):
         obj.hpm = 100
         obj.hp = obj.hpm
         obj.frameSpeed = 12
+        obj.frameTimer = 0
         obj.actSpeed = 120
         obj.actTimer = random.randrange(0, 120)
     if types == 'Boss':
-        obj = BossObject(spr, coord, 'enemy', game, types)
+        obj = BossObject(spr, coord, 'boss', game, types)
         obj.hpm = 5000
         obj.hp = obj.hpm
         obj.frameSpeed = 12
         obj.actSpeed = 200
-        obj.actTimer = random.randrange(0, 200)
+        obj.actTimer = random.randrange(0, 120)
     if types == 'player_shot':
         obj = EffectObject(spr, coord, 'effect', game, types)
         obj.frameSpeed = 10
@@ -382,8 +385,21 @@ def createObject(spr, coord, types, game):
 
     if obj.kinds == 'enemy':
         enemys.append(obj)
-
+    if obj.kinds == 'boss':
+        boss_list.append(obj)
+  
     return obj
+
+
+def collision_Boss(self, rect, movement):
+    self.collision = {'top' : False, 'bottom' : False, 'right' : False, 'left' : False}
+    rect.x += movement[0]
+    self.player_flip = False                 # 플레이어 이미지 반전 여부 (False: RIGHT)
+    self.player_animationMode = True         # 애니메이션 모드 (False: 반복, True: 한번)
+    self.player_movement = [0, 0]            # 플레이어 프레임당 속도
+    self.player_vspeed = 0                   # 플레이어 y가속도
+    self.player_flytime = 0                  # 공중에 뜬 시간
+
 
 # 바닥과 충돌 검사 함수
 def collision_floor(rect):
@@ -599,8 +615,31 @@ def createBackImage(tileSpr):
 
     return image
 
+# 보스 맵 데이터
+def createBossMapData():
+    for i in range(TILE_MAPSIZE[0] - 1):    #바닥 데이터 초기화
+        floor_map[i] = -1
+
+    #TILE_MAPSIZE[0] = 128 -> 너비/가로
+    #TILE_MAPSIZE[1] = 32 -> 높이/새로
+
+    #맵 양쪽 끝
+
+    for i in range(TILE_MAPSIZE[0] - 1):    #바닥 데이터 초기화
+        floor_map[i] = 16
+
+
 # 애니메이션 행동 변경 함수
 def change_playerAction(frame, action_var, new_var, frameSpd, new_frameSpd, aniMode, new_aniMode):
+    if action_var != new_var:
+        action_var = new_var
+        frame = 0
+        frameSpd = new_frameSpd
+        aniMode = new_aniMode
+
+    return frame, action_var, frameSpd, aniMode
+
+def change_BossAction(frame, action_var, new_var, frameSpd, new_frameSpd, aniMode, new_aniMode):
     if action_var != new_var:
         action_var = new_var
         frame = 0

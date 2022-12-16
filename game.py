@@ -4,7 +4,7 @@
 #-*-coding: utf-8
 
 from operator import truediv
-import pygame, sys, os, threading
+import pygame, sys, os
 from datafile import *
 from pygame.locals import *
 import pygame.mixer
@@ -27,9 +27,10 @@ class Game:
         self.gameScore = 0       # 점수
 
         # 리소스 불러오기
-        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 16, 16, 8, 8, 12)      # 플레이어 스프라이트 시트
+        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 32, 32, 8, 8, 12)      # 플레이어 스프라이트 시트
         self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # 공통 오브젝트 스프라이트 시트
         self.spriteSheet_map1 = SpriteSheet('spriteSheet3.png', 8, 8, 16, 16, 87)         # 지형 1 스프라이트 시트
+        self.spriteSheet_boss = SpriteSheet('spriteSheet_boss.png', 64, 64, 4, 4, 12)     # 보스 오브젝트 스프라이트 시트
 
         self.spr_player = {}     # 플레이어 스프라이트 세트
         self.spr_player['stay'] = createSpriteSet(self.spriteSheet_player, [0])
@@ -43,8 +44,12 @@ class Game:
         self.spr_enemy = {}      # 적 스프라이트 세트
         self.spr_enemy['slime'] = createSpriteSet(self.spriteSheet_map1, 81, 83)          
         self.spr_enemy['snake'] = createSpriteSet(self.spriteSheet_map1, 84, 86)
-        self.spr_enemy['Boss'] = createSpriteSet(self.spriteSheet_map1, 87, 89)
-
+        
+        self.spr_boss = {}       # 보스 스프라이트 세트
+        self.spr_boss['Boss'] = createSpriteSet(self.spriteSheet_boss, 0, 6)
+        self.spr_boss['Boss_Dash'] = createSpriteSet(self.spriteSheet_boss, 7, 9)
+        self.spr_boss['Boss_Jump'] = createSpriteSet(self.spriteSheet_boss, 10, 11)
+        
         self.spr_map_struct = {}     # 구조물 스프라이트 세트
         self.spr_map_struct['leaf'] = [55, 56]
         self.spr_map_struct['flower'] = [57, 64]
@@ -67,23 +72,23 @@ class Game:
         self.sound_monster = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'monster.wav'))
 
         # 적 생성
-        for i in range(8):
+        for i in range(10):
             obj_snake = createObject(self.spr_enemy['snake'], (random.randrange(0, 960), 100), 'snake', self)
             obj_snake = createObject(self.spr_enemy['slime'], (random.randrange(0, 960), 100), 'slime', self)
         
-        # 보스 생성 변수
-        obj_snake = createObject(self.spr_enemy['Boss'], (level == 5), 'Boss', self)  # 레벨 구현 미정
+        # 보스 생성
+        obj_snake = createObject(self.spr_boss['Boss'], (TILE_MAPSIZE[0], 100), 'Boss', self)  # 레벨 구현 미정
         
-        Boss_sponOK = True
+        Boss_sponOK = True                        # 보스 생성 설정 변수
         Boss_spon_x = TILE_MAPSIZE[0] // 2 - 1
 
         while(Boss_sponOK):
             Boss_spon_x += 1
 
-            if floor_map[Boss_spon_x] != -1:
+            if floor_map[Boss_spon_x] != -1:      # 보스가 땅이 없는 곳에 생성되지 X
                 Boss_sponOK = False
 
-        self.Boss_rect = pygame.Rect((Boss_spon_x * 8, TILE_MAPSIZE[1] * 4 - 28), (12, 28))  #  보스 히트박스 --- 스프라이트 만든후 지정       
+        self.Boss_rect = pygame.Rect((Boss_spon_x * 8, TILE_MAPSIZE[1] * 4 - 28), (10, 26))  #  보스 히트박스
 
         # 플레이어 컨트롤 변수
         self.keyLeft = False
@@ -98,11 +103,12 @@ class Game:
             if floor_map[player_spon_x] != -1:
                 player_sponOK = False
 
-        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # 플레이어 히트박스
+        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 2 - 30), (16, 30))  # 플레이어 히트박스
         self.player_movement = [0, 0]            # 플레이어 프레임당 속도
         self.player_vspeed = 0                   # 플레이어 y가속도
         self.player_flytime = 0                  # 공중에 뜬 시간
 
+        self.collision = {'top' : False, 'bottom' : False, 'right' : False, 'left' : False}
         self.player_action = 'stay'              # 플레이어 현재 행동
         self.player_frame = 0                    # 플레이어 애니메이션 프레임
         self.player_frameSpeed = 1               # 플레이어 애니메이션 속도(낮을 수록 빠름. max 1)
@@ -112,11 +118,6 @@ class Game:
         self.player_walkSoundToggle = False
         self.player_walkSoundTimer = 0
         
-        # knockback
-        self.knockback = False
-        self.knockback_time = .125
-        self.knockback_counter = self.knockback_time*self.fps
-        self.knockback_speed = self.scale(15)
 
         self.player_attack_timer = 0             # 플레이어 공격 타이머
         self.player_attack_speed = 15            # 플레이어 공격 속도
@@ -152,6 +153,7 @@ class Game:
             self.player_vspeed += 0.2
             if self.player_vspeed > 3:
                 self.player_vspeed = 3
+         
 
             if self.player_movement[0] != 0:                  # 플레이어 걷기 애니메이션 처리 및 방향 전환
                 if self.player_flytime == 0:
@@ -230,6 +232,7 @@ class Game:
                  
                         self.player_frame, self.player_action, self.player_frameSpeed, self.player_animationMode = change_playerAction(
                             self.player_frame, self.player_action, 'jump', self.player_frameSpeed, 6, self.player_animationMode, False)
+
                     if event.key == K_SPACE and self.player_attack_timer >= self.player_attack_speed:        # 공격
                         self.player_attack_timer = 0
                         self.player_shot = createObject(self.spr_effect['player_shot'], (self.player_rect.x, self.player_rect.y + 2), 'player_shot', self)
@@ -240,13 +243,6 @@ class Game:
                         self.keyLeft = False
                     if event.key == K_RIGHT:
                         self.keyRight = False
-
-                if (pygame.sprite.collide_rect(self.player_rect, self.Boss_rect)):
-                    if self.player_rect.centerx < self.Boss_rect.centerx:
-                        self.Boss.knockback_speed = abs(self.Boss.knockback_speed)
-                        self.player.knockback_speed = -abs(self.Boss.knockback_speed)
-                    else:
-                        pass
 
             surf = pygame.transform.scale(self.screen_scaled, WINDOW_SIZE)       # 창 배율 적용
             self.screen.blit(surf, (0, 0))
