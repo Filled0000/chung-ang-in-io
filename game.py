@@ -388,11 +388,11 @@ class Game:
                 if var.LifeCount == 0:
                     gameOver()
                 else:
+                    var.LifeCount -= 1
                     self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
                     self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2
                     self.player_vspeed = 0
                     self.player_flytime = 0
-                    var.LifeCount -= 1
                     #위로 올라오고 멈춰야하는데 밑에서 멈춰있네
                     pygame.time.wait(1000)
                     

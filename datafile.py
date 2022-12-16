@@ -283,8 +283,9 @@ class ItemObject(BaseObject):
                 self.destroy = True
                 self.game.get_time_item += 1
                 self.game.sound_coin.play()
-                #텍스트 유지 문제
-                draw_text(self.game.screen_scaled, "Time +5 !", 8, (238, 238, 230), 120, 10)
+                textnum = 0
+                for i in range(60):
+                    draw_text(self.game.screen_scaled, "Time +5 !", 8, (238, 238, 230), 120, 10)
                 
         
         #데미지 증가 아이템(데미지 +30)
@@ -293,7 +294,8 @@ class ItemObject(BaseObject):
                 self.destroy = True
                 self.game.get_damage_item += 1
                 self.game.sound_coin.play()
-                draw_text(self.game.screen_scaled, "Damage +30 !", 8, (238, 238, 230), 120, 10)
+                for i in range(60):
+                    draw_text(self.game.screen_scaled, "Damage +30 !", 8, (238, 238, 230), 120, 10)
 
         #목숨 추가 아이템
         if self.types == 'life_item':
@@ -301,7 +303,9 @@ class ItemObject(BaseObject):
                 self.destroy = True
                 self.game.get_life_item += 1
                 self.game.sound_coin.play()
-                draw_text(self.game.screen_scaled, "Life +1 !", 8, (238, 238, 230), 120, 10)
+                for i in range(60):
+                    draw_text(self.game.screen_scaled, "Life +1 !", 8, (238, 238, 230), 120, 10)
+
         #원래 코인 아이템
         '''if self.destroy == False and self.rect.colliderect(self.game.player_rect):
             self.destroy = True
