@@ -34,6 +34,9 @@ def main_menu():
     TextSurf, TextRect = text_objects("Title", largeText, "White")
     TextRect.center = ((display_width/2),(display_height/2))
     gameDisplay.blit(TextSurf, TextRect)
+    
+    Variables.StageLevel = 0
+    Variables.LifeCount = 3
 
   #  gameDisplay.fill("White")
  #   largeText = pygame.font.Font('assets/font.ttf',115)
@@ -173,7 +176,7 @@ def nextStage():
 
 class Variables:
     StageLevel = 0
-    LifeCount = 300
+    LifeCount = 3
     levelTime = [10, 20, 30, 40, 50]
     levelScore = [10, 30, 50, 70, 90]
 
@@ -390,6 +393,9 @@ class Game:
                     self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
                     self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2
                     var.LifeCount -= 1
+                    
+            if var.LifeCount == 0:
+                    gameOver()
 
             for obj in objects:         # 오브젝트 이벤트 처리
                 if obj.destroy:
