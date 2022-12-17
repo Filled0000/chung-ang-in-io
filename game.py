@@ -3,6 +3,12 @@
 # Referred to DaFluffyPotato's 'Physics - Pygame Tutorial: Making a Platformer'
 #-*-coding: utf-8
 
+
+# [Python pygame Game] RPG tutorial
+# Made by "PrintedLove"
+# Referred to DaFluffyPotato's 'Physics - Pygame Tutorial: Making a Platformer'
+#-*-coding: utf-8
+
 import pygame, sys, os, time
 from datafile import *
 from pygame.locals import *
@@ -12,29 +18,35 @@ from ui import *
 
 pygame.font.init()
 
-display_width = 960  # È­¸é °¡·Î Å©±â
-display_height = 640  # È­¸é ¼¼·Î Å©±â
-gameDisplay = pygame.display.set_mode((display_width, display_height))  # È­¸é Å©±â¼³Á¤
-pygame.display.set_caption("CAU KIUGI")  # Å¸ÀÌÆ²
+display_width = 960  # í™”ë©´ ê°€ë¡œ í¬ê¸°
+display_height = 640  # í™”ë©´ ì„¸ë¡œ í¬ê¸°
+gameDisplay = pygame.display.set_mode((display_width, display_height))  # í™”ë©´ í¬ê¸°ì„¤ì •
+pygame.display.set_caption("CAU KIUGI")  # íƒ€ì´í‹€
 clock = pygame.time.Clock()
 
-# ÆùÆ® ¼³Á¤
-#def get_font(size): # Returns Press-Start-2P in the desired size
-#    return pygame.font.Font("assets/font.ttf", size) 
 
 def text_objects(text, font, color):
     textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
+
+
+
+# def draw_text(screen, text, size, color, x, y):
+#     gameFont = pygame.font.Font(os.path.join(DIR_FONT, DEFAULT_FONT_NAME), size)
+#     text_surface = gameFont.render(text, False, color)
+#     text_rect = text_surface.get_rect()
+#     text_rect.midtop = (round(x), round(y))
+#     screen.blit(text_surface, text_rect)
 
 def main_menu():
     global pause
     pause = False
     menu = True
 
-    largeText = pygame.font.SysFont("font.ttf",115)
-    TextSurf, TextRect = text_objects("CAU KIUGI", largeText, "White")
-    TextRect.center = ((display_width/2),(display_height/4))
-    gameDisplay.blit(TextSurf, TextRect)
+    # largeText = pygame.font.SysFont("font.ttf",115)
+    # TextSurf, TextRect = text_objects("CAU KIUGI", largeText, "White")
+    # TextRect.center = ((display_width/2),(display_height/4))
+    # gameDisplay.blit(TextSurf, TextRect)
 
     
 
@@ -47,7 +59,8 @@ def main_menu():
 #        gameDisplay.fill("White")
 
         gameDisplay.blit(Asset.mainmenu_background, (0, 0))
-        gameDisplay.blit(TextSurf, TextRect)
+        draw_text(gameDisplay, "TITLE", 115, (238, 238, 230), (display_width/2),(display_height/4))
+        #gameDisplay.blit(TextSurf, TextRect)
 
         Button(Asset.mainmenu_start, 305, 290, 348, 63, Asset.mainmenu_start_click, 310, 280, game)
         Button(Asset.mainmenu_htp, 305, 370, 348, 63, Asset.mainmenu_htp_click, 310, 360, htp)
@@ -57,10 +70,11 @@ def main_menu():
         pygame.display.update()
         clock.tick(15)
 
+
 def game():
+    Variables.StageLevel = 0
+    Variables.LifeCount = 3
     Game()
-
-
     
 def htp():
     htp = True
@@ -71,6 +85,7 @@ def htp():
                 pygame.quit()
                 sys.exit()
         gameDisplay.blit(Asset.htp_background, (0, 0))
+        gameDisplay.blit(Asset.htp_image, (0, 0))
         Button(Asset.htp_back, 305, 550, 350, 60, Asset.htp_back_click, 310, 545, main_menu)
 
         pygame.display.update()
@@ -84,7 +99,8 @@ def credit():
                 pygame.quit()
                 sys.exit()
         gameDisplay.blit(Asset.credit_background, (0, 0))
-        Button(Asset.credit_back, 305, 550, 350, 60, Asset.credit_back_click, 310, 545, main_menu)
+        gameDisplay.blit(Asset.credit_image, (0, 0))
+        Button(Asset.credit_back, 364, 570, 232, 42, Asset.credit_back_click, 369, 565, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -101,11 +117,13 @@ def paused():
     global pause
     pause = True
 
-    gameDisplay.fill("White")
-    largeText = pygame.font.SysFont("font",115)
-    TextSurf, TextRect = text_objects("Paused", largeText, "Black")
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
+    # gameDisplay.fill("White")
+    #largeText = pygame.font.SysFont("font",115)
+    #TextSurf, TextRect = text_objects("Paused", largeText, "Black")
+    #TextRect.center = ((display_width/2),(display_height/2))
+    # gameDisplay.blit(TextSurf, TextRect)
+
+    
 
     while pause:
         for event in pygame.event.get():
@@ -113,10 +131,11 @@ def paused():
                 pygame.quit()
                 quit()
                 
-        gameDisplay.fill("white")
-        gameDisplay.blit(TextSurf, TextRect)
-        Button(Asset.continue_button,146,450,348,63, Asset.continue_button_click, 151,445, unpause)
-        Button(Asset.return_menu_button,514,450,348,63, Asset.return_menu_button_click, 519,445, main_menu)
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        draw_text(gameDisplay, "PAUSED", 115, (238, 238, 230), (display_width/2),(display_height/4))
+        #gameDisplay.blit(TextSurf, TextRect)
+        Button(Asset.continue_button,86,450,348,63, Asset.continue_button_click, 91,445, unpause)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -124,11 +143,11 @@ def paused():
 def gameOver():
     global gOver
     gOver = True
-    gameDisplay.fill("White")
-    largeText = pygame.font.SysFont("font",115)
-    TextSurf, TextRect = text_objects("Game Over", largeText, "Black")
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
+    # gameDisplay.fill("White")
+    # largeText = pygame.font.SysFont("font",115)
+    # TextSurf, TextRect = text_objects("Game Over", largeText, "Black")
+    # TextRect.center = ((display_width/2),(display_height/2))
+    # gameDisplay.blit(TextSurf, TextRect)
 
     while gOver:
         for event in pygame.event.get():
@@ -136,10 +155,22 @@ def gameOver():
                 pygame.quit()
                 quit()
                 
-        gameDisplay.fill("white")
-        gameDisplay.blit(TextSurf, TextRect)
-        Button(Asset.again_button,146,450,348,63, Asset.again_button_click,151,445, game)
-        Button(Asset.return_menu_button,514,450,348,63, Asset.return_menu_button_click, 519,445, main_menu)
+        #gameDisplay.fill("white")
+        #gameDisplay.blit(TextSurf, TextRect)
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+#        draw_text(gameDisplay, "GAME OVER", 115, (238, 238, 230), (display_width/2),(display_height/4))
+        #gameDisplay.blit(TextSurf, TextRect)
+
+        
+        over=[Asset.over01, Asset.over02, Asset.over03]
+        num = random.randrange(0,2)
+        rect= over[num].get_rect()
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        gameDisplay.blit(Asset.game_over, [290, 100])
+        gameDisplay.blit(over[num], [290, 380])
+
+        Button(Asset.again_button,86,450,348,63, Asset.again_button_click,91,445, game)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -147,11 +178,11 @@ def gameOver():
 def stageClear():
     global stgClear
     stgClear = True
-    gameDisplay.fill("White")
-    largeText = pygame.font.SysFont("font",115)
-    TextSurf, TextRect = text_objects("Stage Clear", largeText, "Black")
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
+    # gameDisplay.fill("White")
+    # largeText = pygame.font.SysFont("font",115)
+    # TextSurf, TextRect = text_objects("Stage Clear", largeText, "Black")
+    # TextRect.center = ((display_width/2),(display_height/2))
+    # gameDisplay.blit(TextSurf, TextRect)
 
     while stgClear:
         for event in pygame.event.get():
@@ -161,53 +192,99 @@ def stageClear():
                 
         #gameDisplay.fill(white)
         
-        gameDisplay.fill("white")
-        gameDisplay.blit(TextSurf, TextRect)
-        Button(Asset.next_button,146,450,348,63, Asset.next_button_click, 151, 445, nextStage)
-        Button(Asset.return_menu_button,514,450,348,63, Asset.return_menu_button_click, 519,445, main_menu)
+        # gameDisplay.fill("white")
+        # gameDisplay.blit(TextSurf, TextRect)
+        #draw_text(gameDisplay, "STAGE CLEAR", 115, (238, 238, 230), (display_width/2),(display_height/4))
+
+        clear=[Asset.clear01, Asset.clear02, Asset.clear03]
+        num = random.randrange(0,2)
+        rect= clear[num].get_rect()
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        gameDisplay.blit(Asset.game_clear, [290, 100])
+        gameDisplay.blit(clear[num], [290, 380])
+
+
+        #gameDisplay.blit(TextSurf, TextRect)
+        Button(Asset.next_button,86,450,348,63, Asset.next_button_click, 91, 445, nextStage)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
 
         pygame.display.update()
         clock.tick(15)
         
 def nextStage():
-    Game2()
+    if Variables.StageLevel == 1:
+        Game2()
+    elif Variables.StageLevel == 2:
+        Game3()
+    elif Variables.StageLevel == 3:
+        Game4()
+    elif Variables.StageLevel == 4:
+        #BossStage()
+        boss_scene()
 
-# °ÔÀÓ Å¬·¡½º
+def boss_scene():
+    global bossScene
+    bossScene = True
+
+    while bossScene:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+        
+
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        gameDisplay.blit(Asset.boss_img, (0,0))
+        Button(Asset.next_button,86,450,348,63, Asset.next_button_click, 91, 445, BossStage)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
+        pygame.display.update()
+        clock.tick(15)
+        
+
+
+class Variables:
+    StageLevel = 0
+    LifeCount = 3
+    levelTime = [10, 20, 30, 40, 50]
+    levelScore = [10, 30, 50, 70, 90]
+
+# ê²Œì„ í´ë˜ìŠ¤
 class Game:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
 
-        #°ÔÀÓ ÄÁÆ®·Ñ º¯¼ö
-        pygame.display.set_caption('CAU KIUGI')                                      # Ã¢ ÀÌ¸§ ¼³Á¤
+        #ê²Œì„ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        pygame.display.set_caption('RPG tutorial')                                      # ì°½ ì´ë¦„ ì„¤ì •
         self.clock = pygame.time.Clock()
 
         self.screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
-        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # È®´ëÇÑ ½ºÅ©¸°
+        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # í™•ëŒ€í•œ ìŠ¤í¬ë¦°
 
-        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # Ä«¸Ş¶ó ÀÌµ¿ ÁÂÇ¥
+        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # ì¹´ë©”ë¼ ì´ë™ ì¢Œí‘œ
 
-        self.gameScore = 0       # Á¡¼ö
+        self.gameScore = 0       # ì ìˆ˜
 
-        # ¸®¼Ò½º ºÒ·¯¿À±â
-        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 16, 16, 8, 8, 12)      # ÇÃ·¹ÀÌ¾î ½ºÇÁ¶óÀÌÆ® ½ÃÆ®
-        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # °øÅë ¿ÀºêÁ§Æ® ½ºÇÁ¶óÀÌÆ® ½ÃÆ®
-        self.spriteSheet_map1 = SpriteSheet('spriteSheet3.png', 8, 8, 16, 16, 87)         # ÁöÇü 1 ½ºÇÁ¶óÀÌÆ® ½ÃÆ®
+        # ë¦¬ì†ŒìŠ¤ ë¶ˆëŸ¬ì˜¤ê¸°
+        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 32, 32, 8, 8, 12)      # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # ê³µí†µ ì˜¤ë¸Œì íŠ¸ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_map1 = SpriteSheet('spriteSheet3.png', 16, 16, 16, 16, 87)         # ì§€í˜• 1 ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
 
-        self.spr_player = {}     # ÇÃ·¹ÀÌ¾î ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_player = {}     # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_player['stay'] = createSpriteSet(self.spriteSheet_player, [0])
         self.spr_player['run'] = createSpriteSet(self.spriteSheet_player, 1, 8)
         self.spr_player['jump'] = createSpriteSet(self.spriteSheet_player, [9, 10, 11])
 
-        self.spr_effect = {}     # È¿°ú ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_effect = {}     # íš¨ê³¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_effect['player_shot'] = createSpriteSet(self.spriteSheet_object, 37, 40)          
         self.spr_effect['player_shotBoom'] = createSpriteSet(self.spriteSheet_object, 41, 44)
 
-        self.spr_enemy = {}      # Àû ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_enemy = {}      # ì  ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_enemy['slime'] = createSpriteSet(self.spriteSheet_map1, 81, 83)          
         self.spr_enemy['snake'] = createSpriteSet(self.spriteSheet_map1, 84, 86)
 
-        self.spr_map_struct = {}     # ±¸Á¶¹° ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_map_struct = {}     # êµ¬ì¡°ë¬¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_map_struct['leaf'] = [55, 56]
         self.spr_map_struct['flower'] = [57, 64]
         self.spr_map_struct['obj'] = [65, 70]
@@ -215,26 +292,25 @@ class Game:
         self.spr_map_struct['gravestone'] = [75, 78]
         self.spr_map_struct['skull'] = [79, 80]
 
-        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # ÄÚÀÎ ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # ì½”ì¸ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
 
+        createMapData()                                 # ë§µ ë°ì´í„° ì´ˆê¸°í™”
+        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # ë§µ ì´ë¯¸ì§€ ìƒì„±
+        self.backImage = createBackImage(self.spriteSheet_object)         # ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±
 
-        createMapData()                                 # ¸Ê µ¥ÀÌÅÍ ÃÊ±âÈ­
-        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # ¸Ê ÀÌ¹ÌÁö »ı¼º
-        self.backImage = createBackImage(self.spriteSheet_object)         # ¹è°æ ÀÌ¹ÌÁö »ı¼º
-
-        #È¿°úÀ½
+        #íš¨ê³¼ìŒ
         self.sound_attack = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'attack.wav'))
         self.sound_coin = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'coin.wav'))
         self.sound_footstep0 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep0.wav'))
         self.sound_footstep1 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep1.wav'))
         self.sound_monster = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'monster.wav'))
 
-        # Àû »ı¼º
+        # ì  ìƒì„±
         for i in range(8):
             obj_snake = createObject(self.spr_enemy['snake'], (random.randrange(0, 960), 100), 'snake', self)
             obj_snake = createObject(self.spr_enemy['slime'], (random.randrange(0, 960), 100), 'slime', self)
 
-        # ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ º¯¼ö
+        # í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
         self.keyLeft = False
         self.keyRight = False
 
@@ -247,90 +323,81 @@ class Game:
             if floor_map[player_spon_x] != -1:
                 player_sponOK = False
 
-        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # ÇÃ·¹ÀÌ¾î È÷Æ®¹Ú½º
-        self.player_movement = [0, 0]            # ÇÃ·¹ÀÌ¾î ÇÁ·¹ÀÓ´ç ¼Óµµ
-        self.player_vspeed = 0                   # ÇÃ·¹ÀÌ¾î y°¡¼Óµµ
-        self.player_flytime = 0                  # °øÁß¿¡ ¶á ½Ã°£
+        self.player_rect = pygame.Rect((player_spon_x * 4, TILE_MAPSIZE[1] * 2 - 30), (16, 30))  # í”Œë ˆì´ì–´ íˆíŠ¸ë°•ìŠ¤
+        self.player_movement = [0, 0]            # í”Œë ˆì´ì–´ í”„ë ˆì„ë‹¹ ì†ë„
+        self.player_vspeed = 0                   # í”Œë ˆì´ì–´ yê°€ì†ë„
+        self.player_flytime = 0                  # ê³µì¤‘ì— ëœ¬ ì‹œê°„
 
-        self.player_action = 'stay'              # ÇÃ·¹ÀÌ¾î ÇöÀç Çàµ¿
-        self.player_frame = 0                    # ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç ÇÁ·¹ÀÓ
-        self.player_frameSpeed = 1               # ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç ¼Óµµ(³·À» ¼ö·Ï ºü¸§. max 1)
+        self.player_action = 'stay'              # í”Œë ˆì´ì–´ í˜„ì¬ í–‰ë™
+        self.player_frame = 0                    # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„
+        self.player_frameSpeed = 1               # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ ì†ë„(ë‚®ì„ ìˆ˜ë¡ ë¹ ë¦„. max 1)
         self.player_frameTimer = 0
-        self.player_flip = False                 # ÇÃ·¹ÀÌ¾î ÀÌ¹ÌÁö ¹İÀü ¿©ºÎ (False: RIGHT)
-        self.player_animationMode = True         # ¾Ö´Ï¸ŞÀÌ¼Ç ¸ğµå (False: ¹İº¹, True: ÇÑ¹ø)
+        self.player_flip = False                 # í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+        self.player_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
         self.player_walkSoundToggle = False
         self.player_walkSoundTimer = 0
 
-        self.player_attack_timer = 0             # ÇÃ·¹ÀÌ¾î °ø°İ Å¸ÀÌ¸Ó
-        self.player_attack_speed = 15            # ÇÃ·¹ÀÌ¾î °ø°İ ¼Óµµ
+        self.player_attack_timer = 0             # í”Œë ˆì´ì–´ ê³µê²© íƒ€ì´ë¨¸
+        self.player_attack_speed = 15            # í”Œë ˆì´ì–´ ê³µê²© ì†ë„
 
-        # ¹è°æÀ½ ½ÇÇà
+        # ë°°ê²½ìŒ ì‹¤í–‰
         pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
         pygame.mixer.music.play(loops = -1)
 
-        
-        
-        
-        # °ÔÀÓ ½ÇÇà
+
+        # ê²Œì„ ì‹¤í–‰
         self.run()
         
-        #level_time -> ·¹º§´ç ½Ã°£ 
-        #level -> ½ºÅ×ÀÌÁö °è¼ö
+        #level_time -> ë ˆë²¨ë‹¹ ì‹œê°„ 
+        #level -> ìŠ¤í…Œì´ì§€ ê³„ìˆ˜
         
     def run(self):
         self.play = True
-        self.start_ticks=pygame.time.get_ticks()
-        self.level_time = [10, 20, 30, 40, 50, 60]
-        self.level = 0
+        self.start_ticks = pygame.time.get_ticks()
         self.get_time_item = 0
         self.get_damage_item = 0
         self.get_life_item = 0
-        global life
         global pause
-        
-        life = 300
+        var = Variables
 
-        # ¸ŞÀÎ ·çÇÁ
+        # ë©”ì¸ ë£¨í”„
         while True:
-            self.screen_scaled.fill(BACKGROUND_COLOR)            # È­¸é ÃÊ±âÈ­
+            self.screen_scaled.fill(BACKGROUND_COLOR)            # í™”ë©´ ì´ˆê¸°í™”
 
-           
-            self.camera_scroll[0] += int((self.player_rect.x - self.camera_scroll[0] - WINDOW_SIZE[0] / 8 - 5) / 16)       # Ä«¸Ş¶ó ÀÌµ¿
+            self.camera_scroll[0] += int((self.player_rect.x - self.camera_scroll[0] - WINDOW_SIZE[0] / 8 - 5) / 16)       # ì¹´ë©”ë¼ ì´ë™
             self.camera_scroll[1] += int((self.player_rect.y - self.camera_scroll[1] - WINDOW_SIZE[1] / 8 - 2) / 16)
 
-            self.screen_scaled.blit(self.backImage, (0, 0))                                   # ¹è°æ µå·Î¿ì
-            self.screen_scaled.blit(self.mapImage, (-self.camera_scroll[0], -self.camera_scroll[1]))    # ¸Ê µå·Î¿ì
+            self.screen_scaled.blit(self.backImage, (0, 0))                                   # ë°°ê²½ ë“œë¡œìš°
+            self.screen_scaled.blit(self.mapImage, (-self.camera_scroll[0], -self.camera_scroll[1]))    # ë§µ ë“œë¡œìš°
             
-            self.screen_scaled.blit(self.mapImage_front, (-self.camera_scroll[0], -self.camera_scroll[1]))    # ÇÁ·ĞÆ® ¸Ê µå·Î¿ì
+            self.screen_scaled.blit(self.mapImage_front, (-self.camera_scroll[0], -self.camera_scroll[1]))    # í”„ë¡ íŠ¸ ë§µ ë“œë¡œìš°
             
-             # ÀÏ½ÃÁ¤Áö ¹öÆ° »ı¼º
+             # ì¼ì‹œì •ì§€ ë²„íŠ¼ ìƒì„±
             Button(Asset.pause_button, 890, 15, 54, 63, Asset.pause_button_click, 890, 15, paused)
             pygame.display.update()
-
+            
             if self.get_time_item == 0:
                 self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 #calculate how many seconds
             else:
                 self.game_timer = (pygame.time.get_ticks() - self.start_ticks) / 1000 - 5 * self.get_time_item 
 
 
-            if self.game_timer > self.level_time[self.level] and self.gameScore < 10: # if more than 100
+            if self.game_timer > var.levelTime[var.StageLevel] and self.gameScore < var.levelScore[var.StageLevel]: # if more than 100
                 gameOver()
             else:
-                if self.game_timer > self.level_time[self.level] and self.gameScore >= 10:
-                    self.level += 1
+                if self.game_timer > var.levelTime[var.StageLevel] and self.gameScore >= var.levelScore[var.StageLevel]:
+                    var.StageLevel += 1
                     stageClear()
-
-
                 
 
-            draw_text(self.screen_scaled, "Time : " + str(round(self.level_time[self.level] - self.game_timer, 1)), 8, (238, 238, 230), 30, 140)
-            
-            draw_text(self.screen_scaled, "Level : " + str(round(self.level, 1)), 8, (238, 238, 230), 30, 10)
+            draw_text(self.screen_scaled, "Time : " + str(round(var.levelTime[var.StageLevel] - self.game_timer, 1)), 8, (238, 238, 230), 30, 140)
+            draw_text(self.screen_scaled, "Level : " + str(round(var.StageLevel + 1, 1)), 8, (238, 238, 230), 30, 10)
+            draw_text(self.screen_scaled, "Target Score : " + str(round(var.levelScore[var.StageLevel], 1)), 8, (238, 238, 230), 120, 140)
 
-            # ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ
+            # í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤
             if self.player_attack_timer < self.player_attack_speed:
                 self.player_attack_timer += 1
-            self.player_movement = [0, 0]                       # ÇÃ·¹ÀÌ¾î ÀÌµ¿
+            self.player_movement = [0, 0]                       # í”Œë ˆì´ì–´ ì´ë™
             if self.keyLeft:
                 self.player_movement[0] -= 2
             if self.keyRight:
@@ -341,7 +408,7 @@ class Game:
             if self.player_vspeed > 3:
                 self.player_vspeed = 3
 
-            if self.player_movement[0] != 0:                  # ÇÃ·¹ÀÌ¾î °È±â ¾Ö´Ï¸ŞÀÌ¼Ç Ã³¸® ¹× ¹æÇâ ÀüÈ¯
+            if self.player_movement[0] != 0:                  # í”Œë ˆì´ì–´ ê±·ê¸° ì• ë‹ˆë©”ì´ì…˜ ì²˜ë¦¬ ë° ë°©í–¥ ì „í™˜
                 if self.player_flytime == 0:
                     self.player_frame, self.player_action, self.player_frameSpeed, self.player_animationMode = change_playerAction(
                         self.player_frame, self.player_action, 'run', self.player_frameSpeed, 3, self.player_animationMode, True)
@@ -369,6 +436,8 @@ class Game:
                         self.player_frame, self.player_action, 'stay', self.player_frameSpeed, 3, self.player_animationMode, True)
 
             self.player_rect, player_collision = move(self.player_rect, self.player_movement)
+            
+            
 
             if player_collision['bottom']:
                 self.player_vspeed = 0
@@ -376,7 +445,7 @@ class Game:
             else:
                 self.player_flytime += 1
 
-            self.player_frameTimer += 1                          # ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç Å¸ÀÌ¸Ó
+            self.player_frameTimer += 1                          # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ íƒ€ì´ë¨¸
             if self.player_frameTimer >= self.player_frameSpeed:
                 self.player_frame +=1
                 self.player_frameTimer = 0
@@ -388,17 +457,25 @@ class Game:
                         self.player_frame -= 1
 
             self.screen_scaled.blit(pygame.transform.flip(self.spr_player[self.player_action][self.player_frame], self.player_flip, False)
-                               , (self.player_rect.x - self.camera_scroll[0] - 5, self.player_rect.y - self.camera_scroll[1] - 2))      # ÇÃ·¹ÀÌ¾î µå·Î¿ì
+                               , (self.player_rect.x - self.camera_scroll[0] - 5, self.player_rect.y - self.camera_scroll[1] - 2))      # í”Œë ˆì´ì–´ ë“œë¡œìš°
             
-            if self.player_flytime >50:               
-                life -= 1
-                if life == 0:
+            if self.player_flytime > 100:               
+                if var.LifeCount == 0:
                     gameOver()
                 else:
                     self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
                     self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2
+                    self.player_vspeed = 0
+                    self.player_flytime = 0
+                    
+                    var.LifeCount -= 1
+                    
+                    
+                    
+            if var.LifeCount == 0:
+                    gameOver()
 
-            for obj in objects:         # ¿ÀºêÁ§Æ® ÀÌº¥Æ® Ã³¸®
+            for obj in objects:         # ì˜¤ë¸Œì íŠ¸ ì´ë²¤íŠ¸ ì²˜ë¦¬
                 if obj.destroy:
                     obj.destroy_self()
                 else:
@@ -406,12 +483,12 @@ class Game:
                     obj.draw()
                     obj.physics_after()
 
-            life += self.get_life_item
+            var.LifeCount += self.get_life_item
             draw_text(self.screen_scaled, "SCORE: " + str(self.gameScore), 8, (238, 238, 230), 200, 140)
-            draw_text(self.screen_scaled, "LIFE: " + str(life), 8, (238, 238, 230), 200, 10)
+            draw_text(self.screen_scaled, "LIFE: " + str(var.LifeCount), 8, (238, 238, 230), 200, 10)
             self.get_life_item = 0
             
-            # ÀÌº¥Æ® ÄÁÆ®·Ñ
+            # ì´ë²¤íŠ¸ ì»¨íŠ¸ë¡¤
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -421,19 +498,19 @@ class Game:
                         self.keyLeft = True
                     if event.key == K_RIGHT:
                         self.keyRight = True
-                    if event.key == K_UP and self.player_flytime < 6:    # Á¡ÇÁ
-                        self.player_vspeed = -3.5
+                    if event.key == K_UP and self.player_flytime < 6:    # ì í”„
+                        self.player_vspeed = -4.5
                         self.player_flytime += 1
                  
                         self.player_frame, self.player_action, self.player_frameSpeed, self.player_animationMode = change_playerAction(
                             self.player_frame, self.player_action, 'jump', self.player_frameSpeed, 6, self.player_animationMode, False)
-                     
-                    # pause key
+                    
+                    # pause
                     if event.key == pygame.K_p:
-                        # pause = True
+                        pause = True
                         paused()
 
-                    if event.key == K_SPACE and self.player_attack_timer >= self.player_attack_speed:        # °ø°İ
+                    if event.key == K_SPACE and self.player_attack_timer >= self.player_attack_speed:        # ê³µê²©
                         self.player_attack_timer = 0
                         self.player_shot = createObject(self.spr_effect['player_shot'], (self.player_rect.x, self.player_rect.y + 2), 'player_shot', self)
                         self.player_shot.direction = self.player_flip
@@ -444,50 +521,50 @@ class Game:
                     if event.key == K_RIGHT:
                         self.keyRight = False
 
-            surf = pygame.transform.scale(self.screen_scaled, WINDOW_SIZE)       # Ã¢ ¹èÀ² Àû¿ë
+                
+
+            surf = pygame.transform.scale(self.screen_scaled, WINDOW_SIZE)       # ì°½ ë°°ìœ¨ ì ìš©
             self.screen.blit(surf, (0, 0))
 
-            #pygame.display.update()
             self.clock.tick(60)
-        
 
-#game = Game()   # °ÔÀÓ ½ÇÇà
+#game = Game()   # ê²Œì„ ì‹¤í–‰
 
 class Game2:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
 
-        #°ÔÀÓ ÄÁÆ®·Ñ º¯¼ö
-        pygame.display.set_caption('RPG tutorial')                                      # Ã¢ ÀÌ¸§ ¼³Á¤
+        #ê²Œì„ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        pygame.display.set_caption('RPG tutorial')                                      # ì°½ ì´ë¦„ ì„¤ì •
         self.clock = pygame.time.Clock()
 
         self.screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
-        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # È®´ëÇÑ ½ºÅ©¸°
+        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # í™•ëŒ€í•œ ìŠ¤í¬ë¦°
 
-        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # Ä«¸Ş¶ó ÀÌµ¿ ÁÂÇ¥
+        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # ì¹´ë©”ë¼ ì´ë™ ì¢Œí‘œ
 
-        self.gameScore = 0       # Á¡¼ö
+        self.gameScore = 0       # ì ìˆ˜
 
-        # ¸®¼Ò½º ºÒ·¯¿À±â
-        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 16, 16, 8, 8, 12)      # ÇÃ·¹ÀÌ¾î ½ºÇÁ¶óÀÌÆ® ½ÃÆ®
-        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # °øÅë ¿ÀºêÁ§Æ® ½ºÇÁ¶óÀÌÆ® ½ÃÆ®
-        self.spriteSheet_map1 = SpriteSheet('spriteSheet4.png', 8, 8, 16, 16, 87)         # ÁöÇü 1 ½ºÇÁ¶óÀÌÆ® ½ÃÆ®
+        # ë¦¬ì†ŒìŠ¤ ë¶ˆëŸ¬ì˜¤ê¸°
+        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 32, 32, 8, 8, 12)      # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # ê³µí†µ ì˜¤ë¸Œì íŠ¸ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_map1 = SpriteSheet('spriteSheet4.png', 16, 16, 16, 16, 87)         # ì§€í˜• 1 ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
 
-        self.spr_player = {}     # ÇÃ·¹ÀÌ¾î ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_player = {}     # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_player['stay'] = createSpriteSet(self.spriteSheet_player, [0])
         self.spr_player['run'] = createSpriteSet(self.spriteSheet_player, 1, 8)
         self.spr_player['jump'] = createSpriteSet(self.spriteSheet_player, [9, 10, 11])
 
-        self.spr_effect = {}     # È¿°ú ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_effect = {}     # íš¨ê³¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_effect['player_shot'] = createSpriteSet(self.spriteSheet_object, 37, 40)          
         self.spr_effect['player_shotBoom'] = createSpriteSet(self.spriteSheet_object, 41, 44)
 
-        self.spr_enemy = {}      # Àû ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_enemy = {}      # ì  ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_enemy['slime'] = createSpriteSet(self.spriteSheet_map1, 81, 83)          
         self.spr_enemy['snake'] = createSpriteSet(self.spriteSheet_map1, 84, 86)
 
-        self.spr_map_struct = {}     # ±¸Á¶¹° ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_map_struct = {}     # êµ¬ì¡°ë¬¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
         self.spr_map_struct['leaf'] = [55, 56]
         self.spr_map_struct['flower'] = [57, 64]
         self.spr_map_struct['obj'] = [65, 70]
@@ -495,25 +572,25 @@ class Game2:
         self.spr_map_struct['gravestone'] = [75, 78]
         self.spr_map_struct['skull'] = [79, 80]
 
-        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # ÄÚÀÎ ½ºÇÁ¶óÀÌÆ® ¼¼Æ®
+        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # ì½”ì¸ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
 
-        createMapData()                                 # ¸Ê µ¥ÀÌÅÍ ÃÊ±âÈ­
-        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # ¸Ê ÀÌ¹ÌÁö »ı¼º
-        self.backImage = createBackImage(self.spriteSheet_object)         # ¹è°æ ÀÌ¹ÌÁö »ı¼º
+        createMapData()                                 # ë§µ ë°ì´í„° ì´ˆê¸°í™”
+        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # ë§µ ì´ë¯¸ì§€ ìƒì„±
+        self.backImage = createBackImage(self.spriteSheet_object)         # ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±
 
-        #È¿°úÀ½
+        #íš¨ê³¼ìŒ
         self.sound_attack = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'attack.wav'))
         self.sound_coin = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'coin.wav'))
         self.sound_footstep0 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep0.wav'))
         self.sound_footstep1 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep1.wav'))
         self.sound_monster = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'monster.wav'))
 
-        # Àû »ı¼º
+        # ì  ìƒì„±
         for i in range(8):
             obj_snake = createObject(self.spr_enemy['snake'], (random.randrange(0, 960), 100), 'snake', self)
             obj_snake = createObject(self.spr_enemy['slime'], (random.randrange(0, 960), 100), 'slime', self)
 
-        # ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ º¯¼ö
+        # í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
         self.keyLeft = False
         self.keyRight = False
 
@@ -526,24 +603,337 @@ class Game2:
             if floor_map[player_spon_x] != -1:
                 player_sponOK = False
 
-        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # ÇÃ·¹ÀÌ¾î È÷Æ®¹Ú½º
-        self.player_movement = [0, 0]            # ÇÃ·¹ÀÌ¾î ÇÁ·¹ÀÓ´ç ¼Óµµ
-        self.player_vspeed = 0                   # ÇÃ·¹ÀÌ¾î y°¡¼Óµµ
-        self.player_flytime = 0                  # °øÁß¿¡ ¶á ½Ã°£
+        self.player_rect = pygame.Rect((player_spon_x * 4, TILE_MAPSIZE[1] * 2 - 30), (16, 30))  # í”Œë ˆì´ì–´ íˆíŠ¸ë°•ìŠ¤
+        self.player_movement = [0, 0]            # í”Œë ˆì´ì–´ í”„ë ˆì„ë‹¹ ì†ë„
+        self.player_vspeed = 0                   # í”Œë ˆì´ì–´ yê°€ì†ë„
+        self.player_flytime = 0                  # ê³µì¤‘ì— ëœ¬ ì‹œê°„
 
-        self.player_action = 'stay'              # ÇÃ·¹ÀÌ¾î ÇöÀç Çàµ¿
-        self.player_frame = 0                    # ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç ÇÁ·¹ÀÓ
-        self.player_frameSpeed = 1               # ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç ¼Óµµ(³·À» ¼ö·Ï ºü¸§. max 1)
+        self.player_action = 'stay'              # í”Œë ˆì´ì–´ í˜„ì¬ í–‰ë™
+        self.player_frame = 0                    # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„
+        self.player_frameSpeed = 1               # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ ì†ë„(ë‚®ì„ ìˆ˜ë¡ ë¹ ë¦„. max 1)
         self.player_frameTimer = 0
-        self.player_flip = False                 # ÇÃ·¹ÀÌ¾î ÀÌ¹ÌÁö ¹İÀü ¿©ºÎ (False: RIGHT)
-        self.player_animationMode = True         # ¾Ö´Ï¸ŞÀÌ¼Ç ¸ğµå (False: ¹İº¹, True: ÇÑ¹ø)
+        self.player_flip = False                 # í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+        self.player_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
         self.player_walkSoundToggle = False
         self.player_walkSoundTimer = 0
 
-        self.player_attack_timer = 0             # ÇÃ·¹ÀÌ¾î °ø°İ Å¸ÀÌ¸Ó
-        self.player_attack_speed = 15            # ÇÃ·¹ÀÌ¾î °ø°İ ¼Óµµ
+        self.player_attack_timer = 0             # í”Œë ˆì´ì–´ ê³µê²© íƒ€ì´ë¨¸
+        self.player_attack_speed = 15            # í”Œë ˆì´ì–´ ê³µê²© ì†ë„
 
-        # ¹è°æÀ½ ½ÇÇà
+        # ë°°ê²½ìŒ ì‹¤í–‰
+        pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
+        pygame.mixer.music.play(loops = -1)
+
+
+        # ê²Œì„ ì‹¤í–‰
+        Game.run(self)
+
+class Game3:
+    def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
+
+        #ê²Œì„ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        pygame.display.set_caption('RPG tutorial')                                      # ì°½ ì´ë¦„ ì„¤ì •
+        self.clock = pygame.time.Clock()
+
+        self.screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
+        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # í™•ëŒ€í•œ ìŠ¤í¬ë¦°
+
+        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # ì¹´ë©”ë¼ ì´ë™ ì¢Œí‘œ
+
+        self.gameScore = 0       # ì ìˆ˜
+
+        # ë¦¬ì†ŒìŠ¤ ë¶ˆëŸ¬ì˜¤ê¸°
+        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 32, 32, 8, 8, 12)      # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # ê³µí†µ ì˜¤ë¸Œì íŠ¸ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_map1 = SpriteSheet('spriteSheet5.png', 16, 16, 16, 16, 87)         # ì§€í˜• 1 ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+
+        self.spr_player = {}     # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_player['stay'] = createSpriteSet(self.spriteSheet_player, [0])
+        self.spr_player['run'] = createSpriteSet(self.spriteSheet_player, 1, 8)
+        self.spr_player['jump'] = createSpriteSet(self.spriteSheet_player, [9, 10, 11])
+
+        self.spr_effect = {}     # íš¨ê³¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_effect['player_shot'] = createSpriteSet(self.spriteSheet_object, 37, 40)          
+        self.spr_effect['player_shotBoom'] = createSpriteSet(self.spriteSheet_object, 41, 44)
+
+        self.spr_enemy = {}      # ì  ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_enemy['slime'] = createSpriteSet(self.spriteSheet_map1, 81, 83)          
+        self.spr_enemy['snake'] = createSpriteSet(self.spriteSheet_map1, 84, 86)
+
+        self.spr_map_struct = {}     # êµ¬ì¡°ë¬¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_map_struct['leaf'] = [55, 56]
+        self.spr_map_struct['flower'] = [57, 64]
+        self.spr_map_struct['obj'] = [65, 70]
+        self.spr_map_struct['sign'] = [71, 74]
+        self.spr_map_struct['gravestone'] = [75, 78]
+        self.spr_map_struct['skull'] = [79, 80]
+
+        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # ì½”ì¸ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+
+        createMapData()                                 # ë§µ ë°ì´í„° ì´ˆê¸°í™”
+        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # ë§µ ì´ë¯¸ì§€ ìƒì„±
+        self.backImage = createBackImage(self.spriteSheet_object)         # ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±
+
+        #íš¨ê³¼ìŒ
+        self.sound_attack = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'attack.wav'))
+        self.sound_coin = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'coin.wav'))
+        self.sound_footstep0 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep0.wav'))
+        self.sound_footstep1 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep1.wav'))
+        self.sound_monster = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'monster.wav'))
+
+        # ì  ìƒì„±
+        for i in range(8):
+            obj_snake = createObject(self.spr_enemy['snake'], (random.randrange(0, 960), 100), 'snake', self)
+            obj_snake = createObject(self.spr_enemy['slime'], (random.randrange(0, 960), 100), 'slime', self)
+
+        # í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        self.keyLeft = False
+        self.keyRight = False
+
+        player_sponOK = True
+        player_spon_x = TILE_MAPSIZE[0] // 2 - 1
+
+        while(player_sponOK):
+            player_spon_x += 1
+
+            if floor_map[player_spon_x] != -1:
+                player_sponOK = False
+
+        self.player_rect = pygame.Rect((player_spon_x * 4, TILE_MAPSIZE[1] * 2 - 30), (16, 30))  # í”Œë ˆì´ì–´ íˆíŠ¸ë°•ìŠ¤
+        self.player_movement = [0, 0]            # í”Œë ˆì´ì–´ í”„ë ˆì„ë‹¹ ì†ë„
+        self.player_vspeed = 0                   # í”Œë ˆì´ì–´ yê°€ì†ë„
+        self.player_flytime = 0                  # ê³µì¤‘ì— ëœ¬ ì‹œê°„
+
+        self.player_action = 'stay'              # í”Œë ˆì´ì–´ í˜„ì¬ í–‰ë™
+        self.player_frame = 0                    # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„
+        self.player_frameSpeed = 1               # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ ì†ë„(ë‚®ì„ ìˆ˜ë¡ ë¹ ë¦„. max 1)
+        self.player_frameTimer = 0
+        self.player_flip = False                 # í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+        self.player_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
+        self.player_walkSoundToggle = False
+        self.player_walkSoundTimer = 0
+
+        self.player_attack_timer = 0             # í”Œë ˆì´ì–´ ê³µê²© íƒ€ì´ë¨¸
+        self.player_attack_speed = 15            # í”Œë ˆì´ì–´ ê³µê²© ì†ë„
+
+        # ë°°ê²½ìŒ ì‹¤í–‰
+        pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
+        pygame.mixer.music.play(loops = -1)
+
+
+        # ê²Œì„ ì‹¤í–‰
+        Game.run(self)
+
+class Game4:
+    def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
+
+        #ê²Œì„ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        pygame.display.set_caption('RPG tutorial')                                      # ì°½ ì´ë¦„ ì„¤ì •
+        self.clock = pygame.time.Clock()
+
+        self.screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
+        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # í™•ëŒ€í•œ ìŠ¤í¬ë¦°
+
+        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # ì¹´ë©”ë¼ ì´ë™ ì¢Œí‘œ
+
+        self.gameScore = 0       # ì ìˆ˜
+
+        # ë¦¬ì†ŒìŠ¤ ë¶ˆëŸ¬ì˜¤ê¸°
+        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 32, 32, 8, 8, 12)      # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # ê³µí†µ ì˜¤ë¸Œì íŠ¸ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_map1 = SpriteSheet('spriteSheet6.png', 16, 16, 16, 16, 87)         # ì§€í˜• 1 ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+
+        self.spr_player = {}     # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_player['stay'] = createSpriteSet(self.spriteSheet_player, [0])
+        self.spr_player['run'] = createSpriteSet(self.spriteSheet_player, 1, 8)
+        self.spr_player['jump'] = createSpriteSet(self.spriteSheet_player, [9, 10, 11])
+
+        self.spr_effect = {}     # íš¨ê³¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_effect['player_shot'] = createSpriteSet(self.spriteSheet_object, 37, 40)          
+        self.spr_effect['player_shotBoom'] = createSpriteSet(self.spriteSheet_object, 41, 44)
+
+        self.spr_enemy = {}      # ì  ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_enemy['slime'] = createSpriteSet(self.spriteSheet_map1, 81, 83)          
+        self.spr_enemy['snake'] = createSpriteSet(self.spriteSheet_map1, 84, 86)
+
+        self.spr_map_struct = {}     # êµ¬ì¡°ë¬¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_map_struct['leaf'] = [55, 56]
+        self.spr_map_struct['flower'] = [57, 64]
+        self.spr_map_struct['obj'] = [65, 70]
+        self.spr_map_struct['sign'] = [71, 74]
+        self.spr_map_struct['gravestone'] = [75, 78]
+        self.spr_map_struct['skull'] = [79, 80]
+
+        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # ì½”ì¸ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+
+        createMapData()                                 # ë§µ ë°ì´í„° ì´ˆê¸°í™”
+        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # ë§µ ì´ë¯¸ì§€ ìƒì„±
+        self.backImage = createBackImage(self.spriteSheet_object)         # ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±
+
+        #íš¨ê³¼ìŒ
+        self.sound_attack = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'attack.wav'))
+        self.sound_coin = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'coin.wav'))
+        self.sound_footstep0 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep0.wav'))
+        self.sound_footstep1 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep1.wav'))
+        self.sound_monster = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'monster.wav'))
+
+        # ì  ìƒì„±
+        for i in range(8):
+            obj_snake = createObject(self.spr_enemy['snake'], (random.randrange(0, 960), 100), 'snake', self)
+            obj_snake = createObject(self.spr_enemy['slime'], (random.randrange(0, 960), 100), 'slime', self)
+
+        # í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        self.keyLeft = False
+        self.keyRight = False
+
+        player_sponOK = True
+        player_spon_x = TILE_MAPSIZE[0] // 2 - 1
+
+        while(player_sponOK):
+            player_spon_x += 1
+
+            if floor_map[player_spon_x] != -1:
+                player_sponOK = False
+
+        self.player_rect = pygame.Rect((player_spon_x * 4, TILE_MAPSIZE[1] * 2 - 30), (16, 30))  # í”Œë ˆì´ì–´ íˆíŠ¸ë°•ìŠ¤
+        self.player_movement = [0, 0]            # í”Œë ˆì´ì–´ í”„ë ˆì„ë‹¹ ì†ë„
+        self.player_vspeed = 0                   # í”Œë ˆì´ì–´ yê°€ì†ë„
+        self.player_flytime = 0                  # ê³µì¤‘ì— ëœ¬ ì‹œê°„
+
+        self.player_action = 'stay'              # í”Œë ˆì´ì–´ í˜„ì¬ í–‰ë™
+        self.player_frame = 0                    # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„
+        self.player_frameSpeed = 1               # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ ì†ë„(ë‚®ì„ ìˆ˜ë¡ ë¹ ë¦„. max 1)
+        self.player_frameTimer = 0
+        self.player_flip = False                 # í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+        self.player_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
+        self.player_walkSoundToggle = False
+        self.player_walkSoundTimer = 0
+
+        self.player_attack_timer = 0             # í”Œë ˆì´ì–´ ê³µê²© íƒ€ì´ë¨¸
+        self.player_attack_speed = 15            # í”Œë ˆì´ì–´ ê³µê²© ì†ë„
+
+        # ë°°ê²½ìŒ ì‹¤í–‰
+        pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
+        pygame.mixer.music.play(loops = -1)
+
+
+        # ê²Œì„ ì‹¤í–‰
+        Game.run(self)
+
+class BossStage:
+    def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
+        
+        #ê²Œì„ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        pygame.display.set_caption('RPG tutorial')                                      # ì°½ ì´ë¦„ ì„¤ì •
+        self.clock = pygame.time.Clock()
+
+        self.screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
+        self.screen_scaled = pygame.Surface((WINDOW_SIZE[0] / 4, WINDOW_SIZE[1] / 4))        # í™•ëŒ€í•œ ìŠ¤í¬ë¦°
+
+        self.camera_scroll = [TILE_MAPSIZE[0] * 4, 0]              # ì¹´ë©”ë¼ ì´ë™ ì¢Œí‘œ
+
+        self.gameScore = 0       # ì ìˆ˜
+
+        # ë¦¬ì†ŒìŠ¤ ë¶ˆëŸ¬ì˜¤ê¸°
+        self.spriteSheet_player = SpriteSheet('spriteSheet1.png', 32, 32, 8, 8, 12)      # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_object = SpriteSheet('spriteSheet2.png', 8, 8, 16, 16, 45)      # ê³µí†µ ì˜¤ë¸Œì íŠ¸ ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_map1 = SpriteSheet('spriteSheet7.png', 16, 16, 16, 16, 87)        # ì§€í˜• 1 ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸
+        self.spriteSheet_boss = SpriteSheet('spriteSheet_boss.png', 64, 64, 4, 4, 12)
+
+        self.spr_player = {}     # í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_player['stay'] = createSpriteSet(self.spriteSheet_player, [0])
+        self.spr_player['run'] = createSpriteSet(self.spriteSheet_player, 1, 8)
+        self.spr_player['jump'] = createSpriteSet(self.spriteSheet_player, [9, 10, 11])
+
+        self.spr_effect = {}     # íš¨ê³¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_effect['player_shot'] = createSpriteSet(self.spriteSheet_object, 37, 40)          
+        self.spr_effect['player_shotBoom'] = createSpriteSet(self.spriteSheet_object, 41, 44)
+
+        self.spr_enemy = {}      # ì  ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_enemy['slime'] = createSpriteSet(self.spriteSheet_map1, 81, 83)          
+        self.spr_enemy['snake'] = createSpriteSet(self.spriteSheet_map1, 84, 86)
+        
+        self.spr_boss = {}       # ë³´ìŠ¤ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_boss['Boss'] = createSpriteSet(self.spriteSheet_boss, 0, 6)
+        self.spr_boss['Boss_Dash'] = createSpriteSet(self.spriteSheet_boss, 7, 9)
+        self.spr_boss['Boss_Jump'] = createSpriteSet(self.spriteSheet_boss, 10, 11)
+
+        self.spr_map_struct = {}     # êµ¬ì¡°ë¬¼ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+        self.spr_map_struct['leaf'] = [55, 56]
+        self.spr_map_struct['flower'] = [57, 64]
+        self.spr_map_struct['obj'] = [65, 70]
+        self.spr_map_struct['sign'] = [71, 74]
+        self.spr_map_struct['gravestone'] = [75, 78]
+        self.spr_map_struct['skull'] = [79, 80]
+
+        self.spr_coin = createSpriteSet(self.spriteSheet_object, [41, 42])    # ì½”ì¸ ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸
+
+        createBossMapData()                            # ë§µ ë°ì´í„° ì´ˆê¸°í™”
+        self.mapImage, self.mapImage_front = createMapImage(self.spriteSheet_map1, self.spr_map_struct) # ë§µ ì´ë¯¸ì§€ ìƒì„±
+        self.backImage = createBackImage(self.spriteSheet_object)         # ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±
+
+        #íš¨ê³¼ìŒ
+        self.sound_attack = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'attack.wav'))
+        self.sound_coin = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'coin.wav'))
+        self.sound_footstep0 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep0.wav'))
+        self.sound_footstep1 = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'footstep1.wav'))
+        self.sound_monster = pygame.mixer.Sound(os.path.join(DIR_SOUND, 'monster.wav'))
+
+        # ì  ìƒì„±
+        for i in range(8):
+            obj_snake = createObject(self.spr_enemy['snake'], (random.randrange(0, 960), 100), 'snake', self)
+            obj_snake = createObject(self.spr_enemy['slime'], (random.randrange(0, 960), 100), 'slime', self)
+        
+        obj_snake = createObject(self.spr_boss['Boss'], (TILE_MAPSIZE[0], 100), 'Boss', self)  # ë ˆë²¨ êµ¬í˜„ ë¯¸ì •
+        
+        Boss_sponOK = True                        # ë³´ìŠ¤ ìƒì„± ì„¤ì • ë³€ìˆ˜
+        Boss_spon_x = TILE_MAPSIZE[0] // 2 - 1
+
+        while(Boss_sponOK):
+            Boss_spon_x += 1
+
+            if floor_map[Boss_spon_x] != -1:      # ë³´ìŠ¤ê°€ ë•…ì´ ì—†ëŠ” ê³³ì— ìƒì„±ë˜ì§€ X
+                Boss_sponOK = False
+
+        self.Boss_rect = pygame.Rect((Boss_spon_x * 8, TILE_MAPSIZE[1] * 4 - 28), (10, 26))  #  ë³´ìŠ¤ íˆíŠ¸ë°•ìŠ¤
+
+        # í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ ë³€ìˆ˜
+        self.keyLeft = False
+        self.keyRight = False
+
+        player_sponOK = True
+        player_spon_x = TILE_MAPSIZE[0] // 2 - 1
+
+        while(player_sponOK):
+            player_spon_x += 1
+
+            if floor_map[player_spon_x] != -1:
+                player_sponOK = False
+
+        self.player_rect = pygame.Rect((player_spon_x * 4, TILE_MAPSIZE[1] * 2 - 30), (16, 30))  # í”Œë ˆì´ì–´ íˆíŠ¸ë°•ìŠ¤
+        self.player_movement = [0, 0]            # í”Œë ˆì´ì–´ í”„ë ˆì„ë‹¹ ì†ë„
+        self.player_vspeed = 0                   # í”Œë ˆì´ì–´ yê°€ì†ë„
+        self.player_flytime = 0                  # ê³µì¤‘ì— ëœ¬ ì‹œê°„
+
+        self.player_action = 'stay'              # í”Œë ˆì´ì–´ í˜„ì¬ í–‰ë™
+        self.player_frame = 0                    # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„
+        self.player_frameSpeed = 1               # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ ì†ë„(ë‚®ì„ ìˆ˜ë¡ ë¹ ë¦„. max 1)
+        self.player_frameTimer = 0
+        self.player_flip = False                 # í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+        self.player_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
+        self.player_walkSoundToggle = False
+        self.player_walkSoundTimer = 0
+
+        self.player_attack_timer = 0             # í”Œë ˆì´ì–´ ê³µê²© íƒ€ì´ë¨¸
+        self.player_attack_speed = 15            # í”Œë ˆì´ì–´ ê³µê²© ì†ë„
+
+        # ë°°ê²½ìŒ ì‹¤í–‰
         pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
         pygame.mixer.music.play(loops = -1)
         

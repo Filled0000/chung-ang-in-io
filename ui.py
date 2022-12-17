@@ -1,8 +1,8 @@
 import pygame, sys, os, time
 import pygame.mixer
 
-display_width = 960  # È­¸é °¡·Î Å©±â
-display_height = 640  # È­¸é ¼¼·Î Å©±â
+display_width = 960  # í™”ë©´ ê°€ë¡œ í¬ê¸°
+display_height = 640  # í™”ë©´ ì„¸ë¡œ í¬ê¸°
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 
 class Asset:
@@ -18,37 +18,54 @@ class Asset:
     mainmenu_quit_click = pygame.image.load("buttons/06.png")
 
     continue_button = pygame.image.load("buttons/07.png")
-    continue_button_click = pygame.image.load("buttons/07.png") # act È¿°ú
+    continue_button_click = pygame.image.load("buttons/07.png") # act íš¨ê³¼
     return_menu_button = pygame.image.load("buttons/08.png")
-    return_menu_button_click = pygame.image.load("buttons/08.png") # act È¿°ú
+    return_menu_button_click = pygame.image.load("buttons/08.png") # act íš¨ê³¼
 
     next_button = pygame.image.load("buttons/09.png")
-    next_button_click = pygame.image.load("buttons/09.png") # act È¿°ú
+    next_button_click = pygame.image.load("buttons/09.png") # act íš¨ê³¼
 
     again_button = pygame.image.load("buttons/10.png")
-    again_button_click = pygame.image.load("buttons/10.png") # act È¿°ú
+    again_button_click = pygame.image.load("buttons/10.png") # act íš¨ê³¼
 
-    htp_background = pygame.image.load("assets/background.png") # how to play »ç¿ë¹ı ÀÛ¼ºÇÑ ÀÌ¹ÌÁö ÆÄÀÏ ¾÷·Îµå
-    htp_back = pygame.image.load("buttons/13.png") # back ´©¸¦ ¹öÆ° ÀÌ¹ÌÁö
+    htp_background = pygame.image.load("assets/background.png") # how to play ì‚¬ìš©ë²• ì‘ì„±í•œ ì´ë¯¸ì§€ íŒŒì¼ ì—…ë¡œë“œ
+    htp_image = pygame.image.load("assets/htp.png")
+    htp_back = pygame.image.load("buttons/13.png") # back ëˆ„ë¥¼ ë²„íŠ¼ ì´ë¯¸ì§€
     htp_back_click = pygame.image.load("buttons/13.png")
 
-    credit_background = pygame.image.load("assets/background.png") # how to play »ç¿ë¹ı ÀÛ¼ºÇÑ ÀÌ¹ÌÁö ÆÄÀÏ ¾÷·Îµå
-    credit_back = pygame.image.load("buttons/13.png") # back ´©¸¦ ¹öÆ° ÀÌ¹ÌÁö
-    credit_back_click = pygame.image.load("buttons/13.png")
+    credit_background = pygame.image.load("assets/background.png") # how to play ì‚¬ìš©ë²• ì‘ì„±í•œ ì´ë¯¸ì§€ íŒŒì¼ ì—…ë¡œë“œ
+    credit_image = pygame.image.load("assets/credit2.png")
+    credit_back = pygame.image.load("buttons/back2.png") # back ëˆ„ë¥¼ ë²„íŠ¼ ì´ë¯¸ì§€
+    credit_back_click = pygame.image.load("buttons/back2.png")
 
     pause_button=pygame.image.load("buttons/03.png")
     pause_button_click=pygame.image.load("buttons/03.png")
 
-class Button:  # ¹öÆ°
-    def __init__(self, img_in,x, y, width, height, img_act, x_act, y_act, action=None):
-        #self, ÀÌ¹ÌÁö, x,y,³ĞÀÌ,³ôÀÌ, ¹İÀÀÇßÀ» ¶§ ÀÌ¹ÌÁö, ¹İÀÀÇßÀ» ¶§ x, ¹İÀÀÇßÀ» ¶§ y, ÇÔ¼öÈ£Ãâ
+    game_clear = pygame.image.load("image/game clear.png") 
+    game_over = pygame.image.load("image/game over.png") 
 
-        mouse = pygame.mouse.get_pos()  # ¸¶¿ì½º ÁÂÇ¥
-        click = pygame.mouse.get_pressed()  # Å¬¸¯¿©ºÎ
-        if x + width > mouse[0] > x and y + height > mouse[1] > y:  # ¸¶¿ì½º°¡ ¹öÆ°¾È¿¡ ÀÖÀ» ¶§
-            gameDisplay.blit(img_act, (x_act, y_act))  # ¹öÆ° ÀÌ¹ÌÁö º¯°æ
-            if click[0] and action is not None:  # ¸¶¿ì½º°¡ ¹öÆ°¾È¿¡¼­ Å¬¸¯µÇ¾úÀ» ¶§
-                time.sleep(0.2) # 2ÃÊ °£°İ
-                action() # ÇÔ¼ö ½ÇÇà
+    clear01 = pygame.image.load("assets/clear01.png") 
+    clear02 = pygame.image.load("assets/clear02.png") 
+    clear03 = pygame.image.load("assets/clear03.png") 
+
+    over01 = pygame.image.load("assets/over01.png") 
+    over02 = pygame.image.load("assets/over02.png") 
+    over03 = pygame.image.load("assets/over03.png") 
+
+    boss_img = pygame.image.load("assets/boss.png")
+
+
+
+class Button:  # ë²„íŠ¼
+    def __init__(self, img_in,x, y, width, height, img_act, x_act, y_act, action=None):
+        #self, ì´ë¯¸ì§€, x,y,ë„“ì´,ë†’ì´, ë°˜ì‘í–ˆì„ ë•Œ ì´ë¯¸ì§€, ë°˜ì‘í–ˆì„ ë•Œ x, ë°˜ì‘í–ˆì„ ë•Œ y, í•¨ìˆ˜í˜¸ì¶œ
+
+        mouse = pygame.mouse.get_pos()  # ë§ˆìš°ìŠ¤ ì¢Œí‘œ
+        click = pygame.mouse.get_pressed()  # í´ë¦­ì—¬ë¶€
+        if x + width > mouse[0] > x and y + height > mouse[1] > y:  # ë§ˆìš°ìŠ¤ê°€ ë²„íŠ¼ì•ˆì— ìˆì„ ë•Œ
+            gameDisplay.blit(img_act, (x_act, y_act))  # ë²„íŠ¼ ì´ë¯¸ì§€ ë³€ê²½
+            if click[0] and action is not None:  # ë§ˆìš°ìŠ¤ê°€ ë²„íŠ¼ì•ˆì—ì„œ í´ë¦­ë˜ì—ˆì„ ë•Œ
+                time.sleep(0.2) # 2ì´ˆ ê°„ê²©
+                action() # í•¨ìˆ˜ ì‹¤í–‰
         else:
             gameDisplay.blit(img_in, (x, y))

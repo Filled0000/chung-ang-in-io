@@ -1,28 +1,33 @@
+
 # -*- coding: ISO-8859-1 -*- 
 
 import pygame, os, random
 
-DIR_PATH = os.path.dirname(__file__)    # ÆÄÀÏ À§Ä¡
+DIR_PATH = os.path.dirname(__file__)    # íŒŒì¼ ìœ„ì¹˜
 DIR_IMAGE = os.path.join(DIR_PATH, 'image')
 DIR_SOUND = os.path.join(DIR_PATH, 'sound')
 DIR_FONT = os.path.join(DIR_PATH, 'font')
 
-WINDOW_SIZE = (960, 640)            # Ã¢ Å©±â
-TILE_SIZE = 8                       # Å¸ÀÏ Å©±â
+WINDOW_SIZE = (960, 640)            # ì°½ í¬ê¸°
+TILE_SIZE = 16                       # íƒ€ì¼ í¬ê¸°
 TILE_MAPSIZE = (int(WINDOW_SIZE[0] / 7.5), int(WINDOW_SIZE[1] / 20))
 
-BACKGROUND_COLOR = (27, 25, 25)
+BACKGROUND_COLOR = (135, 175, 235)
 
-DEFAULT_FONT_NAME = "munro.ttf"
+DEFAULT_FONT_NAME = "neodgm.ttf"
 
-floor_map = [-1] * TILE_MAPSIZE[0]     # ¹Ù´Ú Å¸ÀÏ ¸Ê(-1: ¾øÀ½, ÀÌ¿Ü: yÁÂÇ¥)
+floor_map = [-1] * TILE_MAPSIZE[0]     # ë°”ë‹¥ íƒ€ì¼ ë§µ(-1: ì—†ìŒ, ì´ì™¸: yì¢Œí‘œ)
 
-objects = []                # ¿ÀºêÁ§Æ® ¸®½ºÆ®
-enemys = []                 # Àû ¿ÀºêÁ§Æ® ¸®½ºÆ®
+objects = []                # ì˜¤ë¸Œì íŠ¸ ë¦¬ìŠ¤íŠ¸
+enemys = []                 # ì  ì˜¤ë¸Œì íŠ¸ ë¦¬ìŠ¤íŠ¸
 
 life = 2
 
-# ½ºÇÁ¶óÀÌÆ® ½ÃÆ® Å¬·¡½º 
+objects = []                # ì˜¤ë¸Œì íŠ¸ ë¦¬ìŠ¤íŠ¸
+enemys = []                 # ì  ì˜¤ë¸Œì íŠ¸ ë¦¬ìŠ¤íŠ¸
+boss_list = []
+
+# ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸ í´ë˜ìŠ¤ 
 class SpriteSheet:           
     def __init__(self, filename, width, height, max_row, max_col, max_index):
         baseImage = pygame.image.load(os.path.join(DIR_IMAGE, filename)).convert()
@@ -30,14 +35,14 @@ class SpriteSheet:
         self.width = width
         self.height = height
 
-        for i in range(max_index):      # ½ºÇÁ¶óÀÌÆ® ½ÃÆ®ÀÇ °¢ ÀÎµ¦½º¿¡ ÀÚ¸¥ ÀÌ¹ÌÁö ÀúÀå
+        for i in range(max_index):      # ìŠ¤í”„ë¼ì´íŠ¸ ì‹œíŠ¸ì˜ ê° ì¸ë±ìŠ¤ì— ìë¥¸ ì´ë¯¸ì§€ ì €ì¥
             image = pygame.Surface((width, height))
             image.blit(baseImage, (0, 0), 
                        ((i % max_row) * width, (i // max_col) * height, width, height))
             image.set_colorkey((0, 0, 0))
             self.spr.append(image)
 
-# ½ºÇÁ¶óÀÌÆ® ¼¼Æ® »ı¼º ÇÔ¼ö 
+# ìŠ¤í”„ë¼ì´íŠ¸ ì„¸íŠ¸ ìƒì„± í•¨ìˆ˜ 
 def createSpriteSet(spriteSheet, index_list, index_max = None):
     spr = []
 
@@ -50,7 +55,7 @@ def createSpriteSet(spriteSheet, index_list, index_max = None):
 
     return spr
 
-# ÅØ½ºÆ® µå·Î¿ì ÇÔ¼ö
+# í…ìŠ¤íŠ¸ ë“œë¡œìš° í•¨ìˆ˜
 def draw_text(screen, text, size, color, x, y):
     gameFont = pygame.font.Font(os.path.join(DIR_FONT, DEFAULT_FONT_NAME), size)
     text_surface = gameFont.render(text, False, color)
@@ -58,7 +63,7 @@ def draw_text(screen, text, size, color, x, y):
     text_rect.midtop = (round(x), round(y))
     screen.blit(text_surface, text_rect)
 
-# ±âº» ¿ÀºêÁ§Æ® Å¬·¡½º
+# ê¸°ë³¸ ì˜¤ë¸Œì íŠ¸ í´ë˜ìŠ¤
 class BaseObject:
     def __init__(self, spr, coord, kinds, game):
         self.kinds = kinds
@@ -106,6 +111,12 @@ class BaseObject:
             , [self.rect.x - 1 - self.game.camera_scroll[0], self.rect.y - 5 - self.game.camera_scroll[1], 10, 2])
             pygame.draw.rect(self.game.screen_scaled, (189, 76, 49)
             , [self.rect.x - 1 - self.game.camera_scroll[0], self.rect.y - 5 - self.game.camera_scroll[1], 10 * self.hp / self.hpm, 2])
+        
+        elif self.kinds == 'boss' and self.hp < self.hpm:
+            pygame.draw.rect(self.game.screen_scaled, (131, 133, 131)
+            , [self.rect.x - 1 - self.game.camera_scroll[0], self.rect.y - 5 - self.game.camera_scroll[1], 10, 2])
+            pygame.draw.rect(self.game.screen_scaled, (189, 76, 49)
+            , [self.rect.x - 1 - self.game.camera_scroll[0], self.rect.y - 5 - self.game.camera_scroll[1], 10 * self.hp / self.hpm, 2])
 
     def animation(self, mode):
         if mode == 'loop':
@@ -122,10 +133,13 @@ class BaseObject:
         if self.kinds == 'enemy':
             enemys.remove(self)
 
+        if self.kinds == 'boss':
+            boss_list.remove(self)
+
         objects.remove(self)
         del(self)
 
-# Àû ¿ÀºêÁ§Æ® Å¬·¡½º
+# ì  ì˜¤ë¸Œì íŠ¸ í´ë˜ìŠ¤
 class EnemyObject(BaseObject):
     def __init__(self, spr, coord, kinds, game, types):
         super().__init__(spr, coord, kinds, game)
@@ -144,8 +158,8 @@ class EnemyObject(BaseObject):
             else:
                 self.game.gameScore += 10
             
-            #Àû Ã³Ä¡ ½Ã ¾ÆÀÌÅÛ »ı¼º
-            #È®·ü Ãß°¡ (Àû Ã³Ä¡ ½Ã 1/3È®·ü·Î ½Ã°£¾ÆÀÌÅÛ or 1/6È®·ü·Î µ¥¹ÌÁö¾ÆÀÌÅÛ or 1/6È®·ü·Î ¸ñ¼û¾ÆÀÌÅÛ µå¶ø, 1/3È®·ü·Î ¾ÆÀÌÅÛ ¹Ì»ı¼º) (È®Á¤Àº ¾Æ´Ô)
+            #ì  ì²˜ì¹˜ ì‹œ ì•„ì´í…œ ìƒì„±
+            #í™•ë¥  ì¶”ê°€ (ì  ì²˜ì¹˜ ì‹œ 1/3í™•ë¥ ë¡œ ì‹œê°„ì•„ì´í…œ or 1/6í™•ë¥ ë¡œ ë°ë¯¸ì§€ì•„ì´í…œ or 1/6í™•ë¥ ë¡œ ëª©ìˆ¨ì•„ì´í…œ ë“œë, 1/3í™•ë¥ ë¡œ ì•„ì´í…œ ë¯¸ìƒì„±) (í™•ì •ì€ ì•„ë‹˜)
             item_number = random.randrange(1,4)
             print(item_number)
             if item_number == 1:
@@ -168,7 +182,7 @@ class EnemyObject(BaseObject):
         if self.destroy == False:
             self.physics()
 
-            if self.types == 'snake':       # ¹ìÀÏ °æ¿ì
+            if self.types == 'snake':       # ë±€ì¼ ê²½ìš°
                 self.animation('loop')
 
                 if self.direction == False:
@@ -182,7 +196,7 @@ class EnemyObject(BaseObject):
                     else:
                         self.direction = False
 
-            elif self.types == 'slime':       # ½½¶óÀÓÀÏ °æ¿ì
+            elif self.types == 'slime':       # ìŠ¬ë¼ì„ì¼ ê²½ìš°
                 self.actTimer += 1
                 self.frameTimer += 1
 
@@ -213,7 +227,78 @@ class EnemyObject(BaseObject):
             if self.collision['right'] or self.collision['left']:
                 self.vspeed = -2
 
-# Åõ»çÃ¼ ¿ÀºêÁ§Æ® Å¬·¡½º
+class BossObject(BaseObject):
+    def __init__(self, spr, coord, kinds, game, types):
+        super().__init__(spr, coord, kinds, game)
+        self.types = types
+        self.actSpeed = 0
+        self.actTimer = 0
+        self.hpm = 0
+        self.hp = 0
+        self.randrange = random.randrange
+
+        self.Boss_action = 'Boss'
+        self.Boss_frame = 0                    # í”Œë ˆì´ì–´ ë³´ìŠ¤ í”„ë ˆì„
+        self.Boss_frameSpeed = 1               # í”Œë ˆì´ì–´ ë³´ìŠ¤ ì†ë„(ë‚®ì„ ìˆ˜ë¡ ë¹ ë¦„. max 1)
+        self.Boss_frameTimer = 0
+        self.Boss_flip = False                 # ë³´ìŠ¤ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+        self.Boss_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
+        
+        self.player_frame = 0                    # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„
+        self.player_frameSpeed = 1               # í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜ ì†ë„(ë‚®ì„ ìˆ˜ë¡ ë¹ ë¦„. max 1)
+        self.player_frameTimer = 0
+        self.player_flip = False                 # í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+        self.player_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
+
+    def events(self):
+        if self.hp < 1:
+            self.destroy = True
+            self.game.sound_monster.play()
+
+            # ë³´ìŠ¤ ì£½ì¸í›„ ì½”ì¸ì´ ë“œë - ìœ„ì™€ ê°™ìŒ
+            for i in range(4):            
+                coin = createObject(self.game.spr_coin, (self.rect.x + random.randrange(-3, 4), self.rect.y - 2), 'coin', self.game)
+                coin.vspeed = random.randrange(-3, 0)
+                coin.direction = random.choice([True, False])
+
+        if self.destroy == False:
+            self.physics()
+
+            if self.types == 'Boss':       # ë³´ìŠ¤ ì¼ë°˜ì ì¸ ì›€ì§ì„
+                self.animation('loop')
+
+                if self.direction == False:
+                    if floor_map[self.rect.right // TILE_SIZE] != -1:
+                        self.movement[0] += 1
+                    else:
+                        self.direction = True
+                else:
+                    if floor_map[self.rect.right // TILE_SIZE - 1] != -1:
+                        self.movement[0] -= 1
+                    else:
+                        self.direction = False
+
+'''
+            for boss in boss_list:
+
+                if self.destroy == False and boss.destroy == False:
+                    if pygame.sprite.collide_rect(self.player_rect.right, self.Boss_rect.left):
+                        self.player_movement[0] -= 2
+                        self.player_vspeed += 2
+                        self.player_flip = True
+                        self.player_frame, self.player_action, self.player_frameSpeed, self.player_animationMode = change_playerAction(
+                            self.player_frame, self.player_action, 'stay', self.player_frameSpeed, 3, self.player_animationMode, True)
+
+
+            # ë¯¸êµ¬í˜„
+            if self.hp <= 2500:
+                
+                self.Boss_frame, self.Boss_action, self.Boss_frameSpeed, self.Boss_animationMode = change_BossAction(
+                         self.Boss_frame, self.Boss_action, 'Boss_Dash', self.Boss_frameSpeed, 3, self.Boss_animationMode, True)
+'''
+
+
+# íˆ¬ì‚¬ì²´ ì˜¤ë¸Œì íŠ¸ í´ë˜ìŠ¤
 class EffectObject(BaseObject):
     def __init__(self, spr, coord, kinds, game, types):
         super().__init__(spr, coord, kinds, game)
@@ -229,7 +314,7 @@ class EffectObject(BaseObject):
         if self.lifeTimer > self.lifetime:
             self.destroy = True
 
-        if self.types == 'player_shot':       # ÇÃ·¹ÀÌ¾î °ø°İÀÏ °æ¿ì
+        if self.types == 'player_shot':       # í”Œë ˆì´ì–´ ê³µê²©ì¼ ê²½ìš°
             self.animation('loop')
 
             if self.direction == False:
@@ -245,16 +330,21 @@ class EffectObject(BaseObject):
                     self.direction = True
                     self.movement[0] -= 4
             
-            #Åõ»çÃ¼°¡ ¹Ù´Ú¿¡ ´ê¾ÒÀ» °æ¿ì »èÁ¦ Ãß°¡ ¿Ï·á#
+            #íˆ¬ì‚¬ì²´ê°€ ë°”ë‹¥ì— ë‹¿ì•˜ì„ ê²½ìš° ì‚­ì œ ì¶”ê°€ ì™„ë£Œ
             if self.collision['top'] or self.collision['bottom'] or self.collision['right'] or self.collision['left']:
                 self.destroy = True
 
-            for enemy in enemys:            # Àû°ú Ãæµ¹ °è»ê
+            for enemy in enemys:            # ì ê³¼ ì¶©ëŒ ê³„ì‚°
                 if self.destroy == False and enemy.destroy == False and self.rect.colliderect(enemy.rect):
                     self.destroy = True
                     enemy.hp -= self.damage
+                    
+            for boss in boss_list:
+                if self.destroy == False and boss.destroy == False and self.rect.colliderect(boss.rect):
+                    self.destroy = True
+                    boss.hp -= self.damage
 
-# ¾ÆÀÌÅÛ ¿ÀºêÁ§Æ® Å¬·¡½º
+# ì•„ì´í…œ ì˜¤ë¸Œì íŠ¸ í´ë˜ìŠ¤
 class ItemObject(BaseObject):
     def __init__(self, spr, coord, kinds, game, types):
         super().__init__(spr, coord, kinds, game)
@@ -277,36 +367,43 @@ class ItemObject(BaseObject):
                 self.direction = True
                 self.movement[0] -= 2
 
-        #Å¸ÀÌ¸Ó ½Ã°£ Ãß°¡ ¾ÆÀÌÅÛ(Å¸ÀÌ¸Ó -5ÃÊ)
+        #íƒ€ì´ë¨¸ ì‹œê°„ ì¶”ê°€ ì•„ì´í…œ(íƒ€ì´ë¨¸ -5ì´ˆ)
         if self.types == 'time_item':
             if self.destroy == False and self.rect.colliderect(self.game.player_rect):
                 self.destroy = True
                 self.game.get_time_item += 1
                 self.game.sound_coin.play()
+                textnum = 0
+                for i in range(60):
+                    draw_text(self.game.screen_scaled, "Time +5 !", 8, (238, 238, 230), 120, 10)
+                
         
-        #µ¥¹ÌÁö Áõ°¡ ¾ÆÀÌÅÛ(µ¥¹ÌÁö +30)
+        #ë°ë¯¸ì§€ ì¦ê°€ ì•„ì´í…œ(ë°ë¯¸ì§€ +30)
         if self.types == 'damage_item':
             if self.destroy == False and self.rect.colliderect(self.game.player_rect):
                 self.destroy = True
                 self.game.get_damage_item += 1
                 self.game.sound_coin.play()
+                for i in range(60):
+                    draw_text(self.game.screen_scaled, "Damage +30 !", 8, (238, 238, 230), 120, 10)
 
-        #¸ñ¼û Ãß°¡ ¾ÆÀÌÅÛ(¹Ì¿Ï¼º)
+        #ëª©ìˆ¨ ì¶”ê°€ ì•„ì´í…œ
         if self.types == 'life_item':
             if self.destroy == False and self.rect.colliderect(self.game.player_rect):
                 self.destroy = True
-                #¸ñ¼û ÇÏ³ª ´Ã¸®±â
                 self.game.get_life_item += 1
                 self.game.sound_coin.play()
+                for i in range(60):
+                    draw_text(self.game.screen_scaled, "Life +1 !", 8, (238, 238, 230), 120, 10)
 
-        #¿ø·¡ ÄÚÀÎ ¾ÆÀÌÅÛ
+        #ì›ë˜ ì½”ì¸ ì•„ì´í…œ
         '''if self.destroy == False and self.rect.colliderect(self.game.player_rect):
             self.destroy = True
             self.game.gameScore += 5
             self.game.sound_coin.play()'''
 
 
-# ¿ÀºêÁ§Æ® »ı¼º ÇÔ¼ö
+# ì˜¤ë¸Œì íŠ¸ ìƒì„± í•¨ìˆ˜
 def createObject(spr, coord, types, game):
     if types == 'snake':
         obj = EnemyObject(spr, coord, 'enemy', game, types)
@@ -326,6 +423,13 @@ def createObject(spr, coord, types, game):
         obj.lifetime = 100
         obj.vspeed = -1
         obj.damage = 30 + game.get_damage_item * 30
+    if types == 'Boss':
+        obj = BossObject(spr, coord, 'boss', game, types)
+        obj.hpm = 5000
+        obj.hp = obj.hpm
+        obj.frameSpeed = 12
+        obj.actSpeed = 200
+        obj.actTimer = random.randrange(0, 120)
         
     if types == 'time_item':
         obj = ItemObject(spr, coord, 'item', game, types)
@@ -345,10 +449,13 @@ def createObject(spr, coord, types, game):
 
     if obj.kinds == 'enemy':
         enemys.append(obj)
+        
+    if obj.kinds == 'boss':
+        boss_list.append(obj)
 
     return obj
 
-# ¹Ù´Ú°ú Ãæµ¹ °Ë»ç ÇÔ¼ö
+# ë°”ë‹¥ê³¼ ì¶©ëŒ ê²€ì‚¬ í•¨ìˆ˜
 def collision_floor(rect):
     hit_list = []
     col = 0
@@ -362,13 +469,22 @@ def collision_floor(rect):
 
     return hit_list
 
-# ¿ÀºêÁ§Æ® ÀÌµ¿ ÇÔ¼ö
+def collision_Boss(self, rect, movement):
+    self.collision = {'top' : False, 'bottom' : False, 'right' : False, 'left' : False}
+    rect.x += movement[0]
+    self.player_flip = False                 # í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë°˜ì „ ì—¬ë¶€ (False: RIGHT)
+    self.player_animationMode = True         # ì• ë‹ˆë©”ì´ì…˜ ëª¨ë“œ (False: ë°˜ë³µ, True: í•œë²ˆ)
+    self.player_movement = [0, 0]            # í”Œë ˆì´ì–´ í”„ë ˆì„ë‹¹ ì†ë„
+    self.player_vspeed = 0                   # í”Œë ˆì´ì–´ yê°€ì†ë„
+    self.player_flytime = 0                  # ê³µì¤‘ì— ëœ¬ ì‹œê°„
+
+# ì˜¤ë¸Œì íŠ¸ ì´ë™ í•¨ìˆ˜
 def move(rect, movement):
-    collision_types = {'top' : False, 'bottom' : False, 'right' : False, 'left' : False}    # Ãæµ¹ Å¸ÀÔ
+    collision_types = {'top' : False, 'bottom' : False, 'right' : False, 'left' : False}    # ì¶©ëŒ íƒ€ì…
     rect.x += movement[0]
     hit_list = collision_floor(rect)
 
-    for tile in hit_list:           # XÃà Ãæµ¹ ¸®½ºÆ® °»½Å
+    for tile in hit_list:           # Xì¶• ì¶©ëŒ ë¦¬ìŠ¤íŠ¸ ê°±ì‹ 
         if movement[0] > 0:
             rect.right = tile.left
             collision_types['right'] = True
@@ -379,7 +495,7 @@ def move(rect, movement):
     rect.y += movement[1]
     hit_list = collision_floor(rect)
 
-    for tile in hit_list:           # YÃà Ãæµ¹ ¸®½ºÆ® °»½Å
+    for tile in hit_list:           # Yì¶• ì¶©ëŒ ë¦¬ìŠ¤íŠ¸ ê°±ì‹ 
         if movement[1] > 0:
             rect.bottom = tile.top
             collision_types['bottom'] = True
@@ -389,34 +505,37 @@ def move(rect, movement):
 
     return rect, collision_types
 
-# ¸Ê µ¥ÀÌÅÍ »ı¼º ÇÔ¼ö
+# ë§µ ë°ì´í„° ìƒì„± í•¨ìˆ˜
 def createMapData():
-    ground_baseheight = 16      # ±âº» ¹Ù´Ú ³ôÀÌ
-    ground_interval = 0         # ¹Ù´Ú °£ °£°İ
-    ground_maxsize = random.randrange(13, 24)        # ¹Ù´Ú ÃÖ´ë Å©±â
+    ground_baseheight = 16      # ê¸°ë³¸ ë°”ë‹¥ ë†’ì´
+    ground_interval = 0         # ë°”ë‹¥ ê°„ ê°„ê²©
+    ground_maxsize = random.randrange(13, 24)        # ë°”ë‹¥ ìµœëŒ€ í¬ê¸°
     ground_maxsize_count = 0
-    ground_size = random.randrange(2, 5)             # ¹Ù´Ú ´ÜÀ§ Å©±â
+    ground_size = random.randrange(2, 5)             # ë°”ë‹¥ ë‹¨ìœ„ í¬ê¸°
     ground_size_count = 0
-    ground_height = ground_baseheight + random.randrange(-2, 3)           # ¹Ù´Ú ³ôÀÌ
+    ground_height = ground_baseheight + random.randrange(-2, 3)           # ë°”ë‹¥ ë†’ì´
     ground_heightChange = 0
-    ground_mode_stack = 1       # Å« Å©±â ½ºÅÃ (Å« Å©±â 1~4°³ »ı¼º ÈÄ ÀÛÀº Å©±â 1°³ »ı¼º)
+    ground_mode_stack = 1       # í° í¬ê¸° ìŠ¤íƒ (í° í¬ê¸° 1~4ê°œ ìƒì„± í›„ ì‘ì€ í¬ê¸° 1ê°œ ìƒì„±)
     ground_mode_stackMax = random.randrange(2, 6)
+    
+    for i in range(TILE_MAPSIZE[0] - 1):    #ë°”ë‹¥ ë°ì´í„° ì´ˆê¸°í™”
+        floor_map[i] = -1
 
     for i in range(TILE_MAPSIZE[0] - 1):
-        if ground_interval > 0:         # ¹Ù´Ú °£°İ ¶ç¿ì±â
+        if ground_interval > 0:         # ë°”ë‹¥ ê°„ê²© ë„ìš°ê¸°
             floor_map[i] = -1
             ground_interval -= 1
         else:
             if ground_maxsize_count < ground_maxsize:
                 if ground_size_count < ground_size:
-                    if ground_maxsize_count == 0 and ground_size > 2:                     # ¹Ù´Ú ½ÃÀÛ Ã³¸®
+                    if ground_maxsize_count == 0 and ground_size > 2:                     # ë°”ë‹¥ ì‹œì‘ ì²˜ë¦¬
                         floor_map[i] = ground_height + ground_heightChange + random.choice([0, 1])
                         ground_size_count += 1
                     else:
                         floor_map[i] = ground_height + ground_heightChange
                         ground_size_count += 1
                 else:
-                    if ground_maxsize_count == ground_maxsize - 1:      # ¹Ù´Ú ³¡ Ã³¸®
+                    if ground_maxsize_count == ground_maxsize - 1:      # ë°”ë‹¥ ë ì²˜ë¦¬
                         if floor_map[i - 2] == floor_map[i - 1]:
                             floor_map[i] = ground_height + ground_heightChange + random.choice([0, 1])
                         else:
@@ -434,8 +553,8 @@ def createMapData():
                         floor_map[i] = ground_height + ground_heightChange
 
                 ground_maxsize_count += 1
-            else:               # ¹Ù´Ú ¿Ï¼º½Ã ´ÙÀ½ ¹Ù´Ú Å©±â ¹× °£°İ Å©±â Ã³¸®
-                if ground_mode_stack < ground_mode_stackMax:    # Å« Å©±â
+            else:               # ë°”ë‹¥ ì™„ì„±ì‹œ ë‹¤ìŒ ë°”ë‹¥ í¬ê¸° ë° ê°„ê²© í¬ê¸° ì²˜ë¦¬
+                if ground_mode_stack < ground_mode_stackMax:    # í° í¬ê¸°
                     ground_mode_stack += 1
 
                     if ground_mode_stack == 1:
@@ -445,7 +564,7 @@ def createMapData():
 
                     ground_maxsize = random.randrange(13, 25)
                     ground_size = random.randrange(2, 9)
-                else:                                           # ÀÛÀº Å©±â
+                else:                                           # ì‘ì€ í¬ê¸°
                     ground_mode_stack = 0
                     ground_mode_stackMax = random.randrange(2, 6)
                     ground_interval = random.randrange(2, 6)
@@ -457,30 +576,30 @@ def createMapData():
                 ground_maxsize_count = 0
                 ground_size_count = 0
 
-# ¸Ê ÀÌ¹ÌÁö »ı¼º ÇÔ¼ö
+# ë§µ ì´ë¯¸ì§€ ìƒì„± í•¨ìˆ˜
 def createMapImage(tileSpr, structSpr):
-    image = pygame.Surface((TILE_MAPSIZE[0] * 8, TILE_MAPSIZE[1] * 8))
+    image = pygame.Surface((TILE_MAPSIZE[0] * 16, TILE_MAPSIZE[1] * 16))
     front_image = pygame.Surface((TILE_MAPSIZE[0] * 8, TILE_MAPSIZE[1] * 8))
-    empty = True                        # ºóÄ­
-    case = 0                            # Å¸ÀÏ Å¸ÀÔ
-    spr_index, spr_index2 = 0, []       # Å¸ÀÏ ½ºÇÁ¶óÀÌÆ® ÀÎµ¦½º
+    empty = True                        # ë¹ˆì¹¸
+    case = 0                            # íƒ€ì¼ íƒ€ì…
+    spr_index, spr_index2 = 0, []       # íƒ€ì¼ ìŠ¤í”„ë¼ì´íŠ¸ ì¸ë±ìŠ¤
     back_height = 0
     pattern_back = 0
     pattern_0 = 0
 
     for col in range(TILE_MAPSIZE[0] - 1):
-        if floor_map[col] == -1:     # ºñ¾úÀ» °æ¿ì
+        if floor_map[col] == -1:     # ë¹„ì—ˆì„ ê²½ìš°
             empty = True
-        else:                        # Å¸ÀÏÀÌ Á¸ÀçÇÒ °æ¿ì
-            if floor_map[col + 1] == -1:     # ¾Õ °ø°£ÀÌ ºñ¾úÀ» °æ¿ì
+        else:                        # íƒ€ì¼ì´ ì¡´ì¬í•  ê²½ìš°
+            if floor_map[col + 1] == -1:     # ì• ê³µê°„ì´ ë¹„ì—ˆì„ ê²½ìš°
                 case = 2
                 spr_index, spr_index2 = 4 + random.choice([0, 2]), [15, 16, 10]
-            else:                           # ¾Õ °ø°£¿¡ Å¸ÀÏÀÌ Á¸ÀçÇÒ °æ¿ì
-                if empty == True:                   # ÀÌÀü °ø°£ÀÌ ºñ¾úÀ» °æ¿ì
+            else:                           # ì• ê³µê°„ì— íƒ€ì¼ì´ ì¡´ì¬í•  ê²½ìš°
+                if empty == True:                   # ì´ì „ ê³µê°„ì´ ë¹„ì—ˆì„ ê²½ìš°
                     case = 1
                     back_height = floor_map[col]
                     spr_index, spr_index2 = 3 + random.choice([0, 2]), [12, 13, 9]
-                else:                               # ÀÌÀü °ø°£¿¡ Å¸ÀÏÀÌ Á¸ÀçÇÒ °æ¿ì
+                else:                               # ì´ì „ ê³µê°„ì— íƒ€ì¼ì´ ì¡´ì¬í•  ê²½ìš°
                     if floor_map[col - 1] > floor_map[col]:
                         case = 3
                         spr_index, spr_index2 = 3 + random.choice([0, 2]), [7]
@@ -497,7 +616,7 @@ def createMapImage(tileSpr, structSpr):
                             spr_index, spr_index2 = 4 + random.choice([0, 2]), [8]
             empty = False
 
-            for backtile in range(5 + back_height - floor_map[col]):        # Å¸ÀÏ µŞºÎºĞ Ã¤¿ì±â
+            for backtile in range(5 + back_height - floor_map[col]):        # íƒ€ì¼ ë’·ë¶€ë¶„ ì±„ìš°ê¸°
                 if backtile < 5:
                     image.blit(tileSpr.spr[29 - 3 * backtile + pattern_back], (col * TILE_SIZE
                         , (floor_map[col] - backtile + back_height - floor_map[col] + 4) * TILE_SIZE))
@@ -509,7 +628,7 @@ def createMapImage(tileSpr, structSpr):
             if pattern_back > 2:
                 pattern_back = 0
 
-            image.blit(tileSpr.spr[spr_index], (col * TILE_SIZE, floor_map[col] * TILE_SIZE))   # Å¸ÀÏ ¾ÕºÎºĞ Ã¤¿ì±â
+            image.blit(tileSpr.spr[spr_index], (col * TILE_SIZE, floor_map[col] * TILE_SIZE))   # íƒ€ì¼ ì•ë¶€ë¶„ ì±„ìš°ê¸°
 
             if case != 0:
                 i = 0
@@ -517,7 +636,7 @@ def createMapImage(tileSpr, structSpr):
                     i += 1
                     image.blit(tileSpr.spr[spr_indexs], (col * TILE_SIZE, (floor_map[col] + i) * TILE_SIZE))
 
-            # ±¸Á¶¹° Ã¤¿ì±â
+            # êµ¬ì¡°ë¬¼ ì±„ìš°ê¸°
             if random.randrange(0, 100) <= 4 and case == 0:
                 if random.choice([True, False]):
                     image.blit(tileSpr.spr[32], ((col) * TILE_SIZE, (floor_map[col] - 1) * TILE_SIZE))
@@ -541,7 +660,7 @@ def createMapImage(tileSpr, structSpr):
 
     return image, front_image
 
-# ¹è°æ ÀÌ¹ÌÁö »ı¼ºÇÔ¼ö
+# ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±í•¨ìˆ˜
 def createBackImage(tileSpr):
     image = pygame.Surface((int(WINDOW_SIZE[0] / 2), int(WINDOW_SIZE[1] / 12)))
 
@@ -562,7 +681,7 @@ def createBackImage(tileSpr):
 
     return image
 
-# ¾Ö´Ï¸ŞÀÌ¼Ç Çàµ¿ º¯°æ ÇÔ¼ö
+# ì• ë‹ˆë©”ì´ì…˜ í–‰ë™ ë³€ê²½ í•¨ìˆ˜
 def change_playerAction(frame, action_var, new_var, frameSpd, new_frameSpd, aniMode, new_aniMode):
     if action_var != new_var:
         action_var = new_var
@@ -571,3 +690,23 @@ def change_playerAction(frame, action_var, new_var, frameSpd, new_frameSpd, aniM
         aniMode = new_aniMode
 
     return frame, action_var, frameSpd, aniMode
+
+def change_BossAction(frame, action_var, new_var, frameSpd, new_frameSpd, aniMode, new_aniMode):
+    if action_var != new_var:
+        action_var = new_var
+        frame = 0
+        frameSpd = new_frameSpd
+        aniMode = new_aniMode
+
+    return frame, action_var, frameSpd, aniMode
+def createBossMapData():
+    for i in range(TILE_MAPSIZE[0] - 1):    #ë°”ë‹¥ ë°ì´í„° ì´ˆê¸°í™”
+        floor_map[i] = -1
+    
+    #TILE_MAPSIZE[0] = 128 -> ë„ˆë¹„/ê°€ë¡œ
+    #TILE_MAPSIZE[1] = 32 -> ë†’ì´/ìƒˆë¡œ
+    
+    #ë§µ ì–‘ìª½ ë
+    
+    for i in range(TILE_MAPSIZE[0] - 1):    #ë°”ë‹¥ ë°ì´í„° ì´ˆê¸°í™”
+        floor_map[i] = 16
