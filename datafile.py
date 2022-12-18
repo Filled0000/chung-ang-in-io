@@ -1,5 +1,8 @@
 # -*- coding: ISO-8859-1 -*- 
-
+'''<플레이어&아이템>
+1. 플레이어 리스폰 후 일정 시간 움직이지 못하도록 처리 
+ㄴ-> player_spon_x 수정 floor_map[n] != -1 n-2 
+2. 아이템 효과 표시 시간 증가'''
 import pygame, os, random
 
 DIR_PATH = os.path.dirname(__file__)    # 파일 위치
@@ -283,9 +286,7 @@ class ItemObject(BaseObject):
                 self.destroy = True
                 self.game.get_time_item += 1
                 self.game.sound_coin.play()
-                textnum = 0
-                for i in range(60):
-                    draw_text(self.game.screen_scaled, "Time +5 !", 8, (238, 238, 230), 120, 10)
+                draw_text(self.game.screen_scaled, "Time +5 !", 8, (238, 238, 230), 120, 10)
                 
         
         #데미지 증가 아이템(데미지 +30)
@@ -294,8 +295,7 @@ class ItemObject(BaseObject):
                 self.destroy = True
                 self.game.get_damage_item += 1
                 self.game.sound_coin.play()
-                for i in range(60):
-                    draw_text(self.game.screen_scaled, "Damage +30 !", 8, (238, 238, 230), 120, 10)
+                draw_text(self.game.screen_scaled, "Damage +30 !", 8, (238, 238, 230), 120, 10)
 
         #목숨 추가 아이템
         if self.types == 'life_item':
@@ -303,8 +303,7 @@ class ItemObject(BaseObject):
                 self.destroy = True
                 self.game.get_life_item += 1
                 self.game.sound_coin.play()
-                for i in range(60):
-                    draw_text(self.game.screen_scaled, "Life +1 !", 8, (238, 238, 230), 120, 10)
+                draw_text(self.game.screen_scaled, "Life +1 !", 8, (238, 238, 230), 120, 10)
 
         #원래 코인 아이템
         '''if self.destroy == False and self.rect.colliderect(self.game.player_rect):

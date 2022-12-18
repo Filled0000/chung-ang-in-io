@@ -246,15 +246,24 @@ class Game:
         self.keyRight = False
 
         player_sponOK = True
-        player_spon_x = TILE_MAPSIZE[0] // 2 - 1
-
+        self.player_spon_x = TILE_MAPSIZE[0] // 2 - 1
+        #1. 플레이어 리스폰 후 일정 시간 움직이지 못하도록 처리 
+        #ㄴ-> player_spon_x 수정 floor_map[n] != -1 n-2 
         while(player_sponOK):
-            player_spon_x += 1
+            self.player_spon_x += 1  
 
-            if floor_map[player_spon_x] != -1:
-                player_sponOK = False
+            '''if floor_map[player_spon_x] != -1: #and floor_map[player_spon_x - 10] != -1 and floor_map[player_spon_x + 10] != -1:
+                player_sponOK = False'''
+            '''if floor_map[player_spon_x] != -1 and floor_map[player_spon_x + 1] != -1 and floor_map[player_spon_x - 1] != -1 and floor_map[player_spon_x + 2] != -1 and floor_map[player_spon_x - 2] != -1 and floor_map[player_spon_x + 3] != -1 and floor_map[player_spon_x - 3] != -1:
+                player_sponOK = False'''
+            if floor_map[self.player_spon_x] != -1:
+                if floor_map[self.player_spon_x + 1] != -1 and floor_map[self.player_spon_x - 1] != -1:
+                    if floor_map[self.player_spon_x + 2] != -1 and floor_map[self.player_spon_x - 2] != -1:
+                        if floor_map[self.player_spon_x + 3] != -1 and floor_map[self.player_spon_x - 3] != -1:
+                            if floor_map[self.player_spon_x + 4] != -1 and floor_map[self.player_spon_x - 4] != -1:
+                                player_sponOK = False
 
-        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # 플레이어 히트박스
+        self.player_rect = pygame.Rect((self.player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # 플레이어 히트박스
         self.player_movement = [0, 0]            # 플레이어 프레임당 속도
         self.player_vspeed = 0                   # 플레이어 y가속도
         self.player_flytime = 0                  # 공중에 뜬 시간
@@ -275,7 +284,7 @@ class Game:
         pygame.mixer.music.load(os.path.join(DIR_SOUND, 'background.wav'))
         pygame.mixer.music.play(loops = -1)
 
-
+        
         # 게임 실행
         self.run()
         
@@ -389,12 +398,12 @@ class Game:
                     gameOver()
                 else:
                     var.LifeCount -= 1
-                    self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
-                    self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2
+                    '''self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
+                    self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2'''
+                    self.player_rect.x = self.player_spon_x * 8
+                    self.player_rect.y = TILE_MAPSIZE[1] * 4 - 14
                     self.player_vspeed = 0
                     self.player_flytime = 0
-                    #위로 올라오고 멈춰야하는데 밑에서 멈춰있네
-                    pygame.time.wait(1000)
                     
             if var.LifeCount == 0:
                     gameOver()
