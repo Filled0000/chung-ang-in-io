@@ -29,15 +29,32 @@ class Asset:
     again_button_click = pygame.image.load("buttons/10.png") # act 효과
 
     htp_background = pygame.image.load("assets/background.png") # how to play 사용법 작성한 이미지 파일 업로드
+    htp_image = pygame.image.load("assets/htp.png")
     htp_back = pygame.image.load("buttons/13.png") # back 누를 버튼 이미지
     htp_back_click = pygame.image.load("buttons/13.png")
 
     credit_background = pygame.image.load("assets/background.png") # how to play 사용법 작성한 이미지 파일 업로드
-    credit_back = pygame.image.load("buttons/13.png") # back 누를 버튼 이미지
-    credit_back_click = pygame.image.load("buttons/13.png")
+    credit_image = pygame.image.load("assets/credit2.png")
+    credit_back = pygame.image.load("buttons/back2.png") # back 누를 버튼 이미지
+    credit_back_click = pygame.image.load("buttons/back2.png")
 
     pause_button=pygame.image.load("buttons/03.png")
     pause_button_click=pygame.image.load("buttons/03.png")
+
+    game_clear = pygame.image.load("image/game clear.png") 
+    game_over = pygame.image.load("image/game over.png") 
+
+    clear01 = pygame.image.load("assets/clear01.png") 
+    clear02 = pygame.image.load("assets/clear02.png") 
+    clear03 = pygame.image.load("assets/clear03.png") 
+
+    over01 = pygame.image.load("assets/over01.png") 
+    over02 = pygame.image.load("assets/over02.png") 
+    over03 = pygame.image.load("assets/over03.png") 
+
+    boss_img = pygame.image.load("assets/boss.png")
+
+
 
 class Button:  # 버튼
     def __init__(self, img_in,x, y, width, height, img_act, x_act, y_act, action=None):

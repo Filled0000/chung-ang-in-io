@@ -21,26 +21,32 @@ pygame.font.init()
 display_width = 960  # 화면 가로 크기
 display_height = 640  # 화면 세로 크기
 gameDisplay = pygame.display.set_mode((display_width, display_height))  # 화면 크기설정
-pygame.display.set_caption("CAU KIUGI")  # 타이틀
+pygame.display.set_caption("Chungang-in-io")  # 타이틀
 clock = pygame.time.Clock()
 
-# 폰트 설정
-#def get_font(size): # Returns Press-Start-2P in the desired size
-#    return pygame.font.Font("assets/font.ttf", size) 
 
 def text_objects(text, font, color):
     textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
+
+
+
+# def draw_text(screen, text, size, color, x, y):
+#     gameFont = pygame.font.Font(os.path.join(DIR_FONT, DEFAULT_FONT_NAME), size)
+#     text_surface = gameFont.render(text, False, color)
+#     text_rect = text_surface.get_rect()
+#     text_rect.midtop = (round(x), round(y))
+#     screen.blit(text_surface, text_rect)
 
 def main_menu():
     global pause
     pause = False
     menu = True
 
-    largeText = pygame.font.SysFont("font.ttf",115)
-    TextSurf, TextRect = text_objects("CAU KIUGI", largeText, "White")
-    TextRect.center = ((display_width/2),(display_height/4))
-    gameDisplay.blit(TextSurf, TextRect)
+    # largeText = pygame.font.SysFont("font.ttf",115)
+    # TextSurf, TextRect = text_objects("CAU KIUGI", largeText, "White")
+    # TextRect.center = ((display_width/2),(display_height/4))
+    # gameDisplay.blit(TextSurf, TextRect)
 
     
 
@@ -53,7 +59,8 @@ def main_menu():
 #        gameDisplay.fill("White")
 
         gameDisplay.blit(Asset.mainmenu_background, (0, 0))
-        gameDisplay.blit(TextSurf, TextRect)
+        draw_text(gameDisplay, "Chungangin.io", 115, (238, 238, 230), (display_width/2),(display_height/4))
+        #gameDisplay.blit(TextSurf, TextRect)
 
         Button(Asset.mainmenu_start, 305, 290, 348, 63, Asset.mainmenu_start_click, 310, 280, game)
         Button(Asset.mainmenu_htp, 305, 370, 348, 63, Asset.mainmenu_htp_click, 310, 360, htp)
@@ -78,6 +85,7 @@ def htp():
                 pygame.quit()
                 sys.exit()
         gameDisplay.blit(Asset.htp_background, (0, 0))
+        gameDisplay.blit(Asset.htp_image, (0, 0))
         Button(Asset.htp_back, 305, 550, 350, 60, Asset.htp_back_click, 310, 545, main_menu)
 
         pygame.display.update()
@@ -91,7 +99,8 @@ def credit():
                 pygame.quit()
                 sys.exit()
         gameDisplay.blit(Asset.credit_background, (0, 0))
-        Button(Asset.credit_back, 305, 550, 350, 60, Asset.credit_back_click, 310, 545, main_menu)
+        gameDisplay.blit(Asset.credit_image, (0, 0))
+        Button(Asset.credit_back, 364, 570, 232, 42, Asset.credit_back_click, 369, 565, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -108,11 +117,13 @@ def paused():
     global pause
     pause = True
 
-    gameDisplay.fill("White")
-    largeText = pygame.font.SysFont("font",115)
-    TextSurf, TextRect = text_objects("Paused", largeText, "Black")
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
+    # gameDisplay.fill("White")
+    #largeText = pygame.font.SysFont("font",115)
+    #TextSurf, TextRect = text_objects("Paused", largeText, "Black")
+    #TextRect.center = ((display_width/2),(display_height/2))
+    # gameDisplay.blit(TextSurf, TextRect)
+
+    
 
     while pause:
         for event in pygame.event.get():
@@ -120,10 +131,11 @@ def paused():
                 pygame.quit()
                 quit()
                 
-        gameDisplay.fill("white")
-        gameDisplay.blit(TextSurf, TextRect)
-        Button(Asset.continue_button,146,450,348,63, Asset.continue_button_click, 151,445, unpause)
-        Button(Asset.return_menu_button,514,450,348,63, Asset.return_menu_button_click, 519,445, main_menu)
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        draw_text(gameDisplay, "PAUSED", 115, (238, 238, 230), (display_width/2),(display_height/4))
+        #gameDisplay.blit(TextSurf, TextRect)
+        Button(Asset.continue_button,86,450,348,63, Asset.continue_button_click, 91,445, unpause)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -131,11 +143,11 @@ def paused():
 def gameOver():
     global gOver
     gOver = True
-    gameDisplay.fill("White")
-    largeText = pygame.font.SysFont("font",115)
-    TextSurf, TextRect = text_objects("Game Over", largeText, "Black")
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
+    # gameDisplay.fill("White")
+    # largeText = pygame.font.SysFont("font",115)
+    # TextSurf, TextRect = text_objects("Game Over", largeText, "Black")
+    # TextRect.center = ((display_width/2),(display_height/2))
+    # gameDisplay.blit(TextSurf, TextRect)
 
     while gOver:
         for event in pygame.event.get():
@@ -143,10 +155,22 @@ def gameOver():
                 pygame.quit()
                 quit()
                 
-        gameDisplay.fill("white")
-        gameDisplay.blit(TextSurf, TextRect)
-        Button(Asset.again_button,146,450,348,63, Asset.again_button_click,151,445, game)
-        Button(Asset.return_menu_button,514,450,348,63, Asset.return_menu_button_click, 519,445, main_menu)
+        #gameDisplay.fill("white")
+        #gameDisplay.blit(TextSurf, TextRect)
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+#        draw_text(gameDisplay, "GAME OVER", 115, (238, 238, 230), (display_width/2),(display_height/4))
+        #gameDisplay.blit(TextSurf, TextRect)
+
+        
+        over=[Asset.over01, Asset.over02, Asset.over03]
+        num = random.randrange(0,2)
+        rect= over[num].get_rect()
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        gameDisplay.blit(Asset.game_over, [290, 100])
+        gameDisplay.blit(over[num], [290, 380])
+
+        Button(Asset.again_button,86,450,348,63, Asset.again_button_click,91,445, game)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -154,11 +178,11 @@ def gameOver():
 def stageClear():
     global stgClear
     stgClear = True
-    gameDisplay.fill("White")
-    largeText = pygame.font.SysFont("font",115)
-    TextSurf, TextRect = text_objects("Stage Clear", largeText, "Black")
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
+    # gameDisplay.fill("White")
+    # largeText = pygame.font.SysFont("font",115)
+    # TextSurf, TextRect = text_objects("Stage Clear", largeText, "Black")
+    # TextRect.center = ((display_width/2),(display_height/2))
+    # gameDisplay.blit(TextSurf, TextRect)
 
     while stgClear:
         for event in pygame.event.get():
@@ -168,10 +192,21 @@ def stageClear():
                 
         #gameDisplay.fill(white)
         
-        gameDisplay.fill("white")
-        gameDisplay.blit(TextSurf, TextRect)
-        Button(Asset.next_button,146,450,348,63, Asset.next_button_click, 151, 445, nextStage)
-        Button(Asset.return_menu_button,514,450,348,63, Asset.return_menu_button_click, 519,445, main_menu)
+        # gameDisplay.fill("white")
+        # gameDisplay.blit(TextSurf, TextRect)
+        #draw_text(gameDisplay, "STAGE CLEAR", 115, (238, 238, 230), (display_width/2),(display_height/4))
+
+        clear=[Asset.clear01, Asset.clear02, Asset.clear03]
+        num = random.randrange(0,2)
+        rect= clear[num].get_rect()
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        gameDisplay.blit(Asset.game_clear, [290, 100])
+        gameDisplay.blit(clear[num], [290, 380])
+
+
+        #gameDisplay.blit(TextSurf, TextRect)
+        Button(Asset.next_button,86,450,348,63, Asset.next_button_click, 91, 445, nextStage)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
 
         pygame.display.update()
         clock.tick(15)
@@ -184,7 +219,29 @@ def nextStage():
     elif Variables.StageLevel == 3:
         Game4()
     elif Variables.StageLevel == 4:
-        BossStage()
+        #BossStage()
+        boss_scene()
+
+def boss_scene():
+    global bossScene
+    bossScene = True
+
+    while bossScene:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+        
+
+        gameDisplay.blit(Asset.mainmenu_background, (0, 0))
+        gameDisplay.blit(Asset.boss_img, (0,0))
+        Button(Asset.next_button,86,450,348,63, Asset.next_button_click, 91, 445, BossStage)
+        Button(Asset.return_menu_button,524,450,348,63, Asset.return_menu_button_click, 529,445, main_menu)
+        pygame.display.update()
+        clock.tick(15)
+        
+
 
 class Variables:
     StageLevel = 0
@@ -262,9 +319,14 @@ class Game:
 
         while(player_sponOK):
             player_spon_x += 1
-
             if floor_map[player_spon_x] != -1:
-                player_sponOK = False
+                if floor_map[player_spon_x + 1] != -1 and floor_map[player_spon_x - 1] != -1:
+                    if floor_map[player_spon_x + 2] != -1 and floor_map[player_spon_x - 2] != -1:
+                        if floor_map[player_spon_x + 3] != -1 and floor_map[player_spon_x - 3] != -1:
+                            if floor_map[player_spon_x + 4] != -1 and floor_map[player_spon_x - 4] != -1:
+                                player_sponOK = False
+
+        self.player_rect = pygame.Rect((player_spon_x * 8, TILE_MAPSIZE[1] * 4 - 14), (6, 14))  # 플레이어 히트박스
 
         self.player_rect = pygame.Rect((player_spon_x * 4, TILE_MAPSIZE[1] * 2 - 30), (16, 30))  # 플레이어 히트박스
         self.player_movement = [0, 0]            # 플레이어 프레임당 속도
@@ -407,7 +469,7 @@ class Game:
                     gameOver()
                 else:
                     self.player_rect.x = self.player_rect.x - self.camera_scroll[0] - 5
-                    self.player_rect.y = self.player_rect.y - self.camera_scroll[1] - 2
+                    self.player_rect.y = TILE_MAPSIZE[1] * 4 - 14
                     self.player_vspeed = 0
                     self.player_flytime = 0
                     
